@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Dashboard - 3 Tasks</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --accent: #2563eb;
+            --accent-light: #dbeafe;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .dashboard-header p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .row-1 {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 20px;
+        }
+
+        .task-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--accent-light);
+        }
+
+        .card-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .card-header p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .card-body {
+            flex: 1;
+            padding: 20px;
+            position: relative;
+            overflow: auto;
+        }
+
+        .task-4 {
+            height: 550px;
+        }
+
+        .task-8 {
+            height: 550px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .task-12 {
+            width: 100%;
+            height: 450px;
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            background: var(--bg-color);
+            padding: 12px 16px;
+            border-radius: 8px;
+        }
+
+        .controls label {
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        select {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-family: inherit;
+            font-size: 13px;
+            outline: none;
+            cursor: pointer;
+            background-color: #f8fafc;
+            transition: border-color 0.2s;
+            flex: 1;
+        }
+
+        select:focus {
+            border-color: var(--accent);
+        }
+
+        .region-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-left: 8px;
+        }
+
+        .reset-btn {
+            padding: 6px 12px;
+            background: var(--border-color);
+            color: var(--text-main);
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .reset-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(229, 231, 235, 0.5);
+            border-radius: 12px;
+            padding: 16px;
+            min-width: 200px;
+            pointer-events: none;
+            opacity: 0;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transform: translateY(10px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            z-index: 100;
+            will-change: opacity, transform;
+        }
+
+        .tooltip.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .tt-header {
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .tt-region {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tt-stat {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .tt-stat .label { color: var(--text-muted); }
+        .tt-stat .value { font-weight: 600; color: var(--text-main); }
+        .tt-temp { color: #dc2626 !important; font-size: 15px; }
+
+        .tt-title {
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        .tt-value {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .tt-value span {
+            font-weight: 700;
+            color: #ef4444;
+        }
+
+        .map-path {
+            fill: #e2e8f0;
+            stroke: #ffffff;
+            stroke-width: 1px;
+            vector-effect: non-scaling-stroke;
+            transition: fill 0.3s ease;
+        }
+
+        .map-path:hover {
+            fill: #cbd5e1;
+        }
+
+        .province-point {
+            stroke: #ffffff;
+            stroke-width: 1.5px;
+            vector-effect: non-scaling-stroke;
+            cursor: pointer;
+            transition: filter 0.2s, r 0.2s;
+            paint-order: stroke;
+        }
+
+        .province-point:hover {
+            filter: drop-shadow(0px 0px 4px rgba(0,0,0,0.4));
+        }
+
+        .province-point.highlight {
+            stroke: #06b6d4;
+            stroke-width: 2.5px;
+            filter: drop-shadow(0 0 6px rgba(6, 182, 212, 0.8));
+        }
+
+        .province-point.dim {
+            opacity: 0.2;
+        }
+
+        .bar {
+            cursor: pointer;
+            transition: filter 0.2s;
+        }
+
+        .bar:hover {
+            filter: brightness(0.85);
+        }
+
+        .axis-label {
+            font-size: 12px;
+            font-weight: 600;
+            fill: var(--text-muted);
+        }
+
+        .x-axis text {
+            font-size: 11px;
+            fill: var(--text-main);
+            font-weight: 500;
+        }
+
+        .y-axis text {
+            font-size: 11px;
+            fill: var(--text-muted);
+        }
+
+        .grid line {
+            stroke: var(--border-color);
+            stroke-dasharray: 4;
+            stroke-opacity: 0.6;
+        }
+
+        .dot {
+            stroke: rgba(255,255,255,0.5);
+            stroke-width: 0.5px;
+            opacity: 0.7;
+            cursor: pointer;
+            transition: opacity 0.15s, stroke 0.15s, stroke-width 0.15s;
+        }
+
+        .dot:hover {
+            stroke-width: 2px;
+            stroke: #1e293b;
+            opacity: 1 !important;
+            z-index: 10;
+        }
+
+        .legend-container {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        .loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: 500;
+            color: var(--accent);
+            font-size: 14px;
+        }
+
+        @media (max-width: 1200px) {
+            .row-1 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-header">
+        <h1>🌤️ Vietnam Weather Dashboard</h1>
+        <p>Phân tích dữ liệu thời tiết Việt Nam - 3 trực quan hóa tương tác</p>
+    </div>
+
+    <div class="dashboard-container">
+
+        <!-- ROW 1: TASK 4 + TASK 8 -->
+        <div class="row-1">
+            <!-- TASK 4: BẢN ĐỒ -->
+            <div class="task-card task-4">
+                <div class="card-header">
+                    <h2>📍 Task 4: Bản đồ Nhiệt độ Trung bình</h2>
+                    <p>Phân bố nhiệt độ theo tỉnh/thành - Click bubble để chọn khu vực</p>
+                </div>
+                <div class="card-body" id="map-container">
+                    <div class="loader">Đang tải bản đồ...</div>
+                </div>
+            </div>
+
+            <!-- TASK 8: BIỂU ĐỒ CỘT -->
+            <div class="task-card task-8">
+                <div class="card-header">
+                    <h2>📊 Task 8: Nhiệt độ & Trạng thái Thời tiết</h2>
+                    <p>Chọn khu vực để xem biểu đồ cột nhiệt độ theo trạng thái thời tiết</p>
+                </div>
+                <div class="card-body">
+                    <div class="controls">
+                        <label for="regionFilter">Khu vực:</label>
+                        <select id="regionFilter">
+                            <option value="All">Tất cả khu vực</option>
+                        </select>
+                        <button class="reset-btn" id="resetBtn">↻ Reset</button>
+                    </div>
+                    <div id="regionDisplay"></div>
+                    <div id="chart-container"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROW 2: TASK 12 -->
+        <div class="task-card task-12">
+            <div class="card-header">
+                <h2>☀️ Task 12: Tương quan Độ dài Ban ngày & Chỉ số UV</h2>
+                <p>Scatter plot: Những ngày dài sáng có UV cao hơn không?</p>
+            </div>
+            <div class="card-body">
+                <div id="scatter-container"></div>
+                <div class="legend-container" id="scatter-legend"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ============================================
+        // OPTIMIZATION: Cache scale calculations
+        // ============================================
+        let cachedRadiusScale = null;
+        let cachedColorScale = null;
+
+        // ============================================
+        // TASK 4 - CODE GỐC
+        // ============================================
+        const container = document.getElementById("map-container");
+        const mapWidth = container.clientWidth;
+        const mapHeight = container.clientHeight;
+
+        const svg = d3.select("#map-container")
+            .append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .attr("viewBox", `0 0 ${mapWidth} ${mapHeight}`);
+
+        const g = svg.append("g");
+
+        const mapTooltip = d3.select("#map-container")
+            .append("div")
+            .attr("class", "tooltip");
+
+        const projection = d3.geoMercator()
+            .center([106.0, 16.0])
+            .scale(mapHeight * 2.8)
+            .translate([mapWidth / 2, mapHeight / 2]);
+
+        const pathGenerator = d3.geoPath().projection(projection);
+
+        function cleanCoordinate(coordStr) {
+            if (!coordStr) return null;
+            let cleanStr = coordStr.replace(/\./g, '');
+            let num = parseFloat(cleanStr);
+            if (num > 1000000) return num / 10000;
+            if (num > 1000) return num / 10000;
+            if (num > 100) return num / 10;
+            return parseFloat(coordStr);
+        }
+
+        function parseTime(timeStr) {
+            if (!timeStr) return null;
+            const [time, modifier] = timeStr.split(' ');
+            let [hours, minutes] = time.split(':');
+            hours = parseInt(hours, 10);
+            minutes = parseInt(minutes, 10);
+            if (modifier === 'PM' && hours !== 12) hours += 12;
+            if (modifier === 'AM' && hours === 12) hours = 0;
+            return hours + minutes / 60;
+        }
+
+        function getUvColor(uv) {
+            if (uv <= 2) return "#10b981";
+            if (uv <= 5) return "#fbbf24";
+            if (uv <= 7) return "#f97316";
+            if (uv <= 10) return "#ef4444";
+            return "#8b5cf6";
+        }
+
+        const geojsonUrl = "https://raw.githubusercontent.com/TungTh/tungth.github.io/master/data/vn-provinces.json";
+        const csvUrl = "clean_weather_dataset.csv";
+
+        Promise.all([
+            d3.json(geojsonUrl),
+            d3.csv(csvUrl)
+        ]).then(([geoData, weatherData]) => {
+
+            d3.select("#loader").remove();
+
+            // Draw map paths
+            g.selectAll("path")
+                .data(geoData.features)
+                .enter()
+                .append("path")
+                .attr("class", "map-path")
+                .attr("d", pathGenerator);
+
+            // Process weather data
+            weatherData.forEach(d => {
+                d.lat = cleanCoordinate(d["location.lat"]);
+                d.lon = cleanCoordinate(d["location.lon"]);
+                d.avgTemp = parseFloat(d["day.avgtemp_c"]);
+            });
+
+            const validData = weatherData.filter(d => !isNaN(d.lat) && !isNaN(d.lon) && !isNaN(d.avgTemp));
+
+            const minTemp = Math.floor(d3.min(validData, d => d.avgTemp));
+            const maxTemp = Math.ceil(d3.max(validData, d => d.avgTemp));
+
+            const colorScale = d3.scaleSequential(d3.interpolateYlOrRd).domain([minTemp, maxTemp]);
+            const radiusScale = d3.scaleSqrt().domain([minTemp, maxTemp]).range([4, 16]);
+
+            // Draw circles
+            const circles = g.selectAll("circle")
+                .data(validData)
+                .enter()
+                .append("circle")
+                .attr("class", "province-point")
+                .attr("cx", d => projection([d.lon, d.lat])[0])
+                .attr("cy", d => projection([d.lon, d.lat])[1])
+                .attr("fill", d => colorScale(d.avgTemp))
+                .attr("r", 0);
+
+            circles.transition()
+                .duration(800)
+                .delay((d, i) => i * 8)
+                .ease(d3.easeCubicOut)
+                .attr("r", d => radiusScale(d.avgTemp));
+
+            // Hover events - OPTIMIZED: Use CSS classes instead of transitions
+            circles.on("mouseover", function(event, d) {
+                const currentK = d3.zoomTransform(svg.node()).k;
+                d3.select(this)
+                    .raise()
+                    .attr("r", (radiusScale(d.avgTemp) * 1.5) / currentK);
+
+                mapTooltip.html(`
+                    <div class="tt-header">${d["location.name"]}</div>
+                    <div class="tt-region">${d["location.region"]}</div>
+                    <div class="tt-stat">
+                        <span class="label">Nhiệt độ:</span>
+                        <span class="value tt-temp">${d.avgTemp}°C</span>
+                    </div>
+                    <div class="tt-stat">
+                        <span class="label">Lượng mưa:</span>
+                        <span class="value">${d["day.totalprecip_mm"]} mm</span>
+                    </div>
+                    <div class="tt-stat">
+                        <span class="label">Thời tiết:</span>
+                        <span class="value">${d["day.condition.text"]}</span>
+                    </div>
+                `);
+
+                mapTooltip.classed("visible", true)
+                    .style("left", (event.pageX + 20) + "px")
+                    .style("top", (event.pageY - 20) + "px");
+            })
+            .on("mousemove", function(event) {
+                // OPTIMIZED: Debounce tooltip position update
+                mapTooltip.style("left", (event.pageX + 20) + "px")
+                    .style("top", (event.pageY - 20) + "px");
+            })
+            .on("mouseout", function(event, d) {
+                const currentK = d3.zoomTransform(svg.node()).k;
+                d3.select(this)
+                    .attr("r", radiusScale(d.avgTemp) / currentK);
+
+                mapTooltip.classed("visible", false);
+            })
+            .on("click", function(event, d) {
+                setSelectedRegion(d["location.region"]);
+            });
+
+            // Zoom - OPTIMIZED: Throttle with requestAnimationFrame
+            let zoomPending = false;
+            let lastTransform = null;
+
+            const zoom = d3.zoom()
+                .scaleExtent([1, 10])
+                .on("zoom", (event) => {
+                    lastTransform = event.transform;
+                    if (!zoomPending) {
+                        zoomPending = true;
+                        requestAnimationFrame(() => {
+                            g.attr("transform", lastTransform);
+                            // Only update radius, not position
+                            const k = lastTransform.k;
+                            circles.attr("r", d => radiusScale(d.avgTemp) / k);
+                            zoomPending = false;
+                        });
+                    }
+                });
+
+            svg.call(zoom);
+
+            // ============================================
+            // TASK 8 - CODE GỐC (Modified)
+            // ============================================
+            const margin = { top: 30, right: 30, bottom: 100, left: 60 };
+            const width = 400 - margin.left - margin.right;
+            const height = 320 - margin.top - margin.bottom;
+
+            const task8Svg = d3.select("#chart-container")
+                .append("svg")
+                .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
+                .append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+
+            const chartTooltip = d3.select("body").append("div").attr("class", "tooltip");
+
+            const gridGroup = task8Svg.append("g").attr("class", "grid");
+            const xAxisGroup = task8Svg.append("g").attr("transform", `translate(0,${height})`).attr("class", "x-axis");
+            const yAxisGroup = task8Svg.append("g").attr("class", "y-axis");
+
+            task8Svg.append("text")
+                .attr("class", "axis-label")
+                .attr("transform", "rotate(-90)")
+                .attr("x", -height / 2)
+                .attr("y", -40)
+                .attr("text-anchor", "middle")
+                .text("Nhiệt độ TB (°C)");
+
+            globalChartData = weatherData.map(d => ({
+                region: d["location.region"],
+                condition: d["day.condition.text"],
+                temp: parseFloat(d["day.avgtemp_c"])
+            })).filter(d => !isNaN(d.temp) && d.condition && d.region);
+
+            const regions = [...new Set(globalChartData.map(d => d.region))].sort();
+            const select = d3.select("#regionFilter");
+            regions.forEach(region => {
+                select.append("option").attr("value", region).text(region);
+            });
+
+            select.on("change", function() {
+                setSelectedRegion(this.value);
+            });
+
+            d3.select("#resetBtn").on("click", function() {
+                setSelectedRegion("All");
+            });
+
+            function updateChart(selectedRegionValue) {
+                let filteredData = globalChartData;
+                if (selectedRegionValue !== "All") {
+                    filteredData = globalChartData.filter(d => d.region === selectedRegionValue);
+                }
+
+                let rollupData = d3.rollups(
+                    filteredData,
+                    v => d3.mean(v, d => d.temp),
+                    d => d.condition
+                );
+
+                let chartData = rollupData.map(([condition, avgTemp]) => ({
+                    condition: condition,
+                    avgTemp: avgTemp
+                })).sort((a, b) => b.avgTemp - a.avgTemp);
+
+                const xScale = d3.scaleBand()
+                    .domain(chartData.map(d => d.condition))
+                    .range([0, width])
+                    .padding(0.3);
+
+                const maxTemp = d3.max(chartData, d => d.avgTemp) || 0;
+                const yScale = d3.scaleLinear()
+                    .domain([0, maxTemp * 1.15])
+                    .range([height, 0]);
+
+                const colorScale = d3.scaleSequential(d3.interpolateSpectral)
+                    .domain([maxTemp, d3.min(chartData, d => d.avgTemp) || 0]);
+
+                xAxisGroup.transition().duration(800).ease(d3.easeCubicOut)
+                    .call(d3.axisBottom(xScale).tickSizeOuter(0))
+                    .selectAll("text")
+                    .attr("transform", "translate(-10,0)rotate(-40)")
+                    .style("text-anchor", "end");
+
+                yAxisGroup.transition().duration(800).ease(d3.easeCubicOut)
+                    .call(d3.axisLeft(yScale).ticks(6));
+
+                gridGroup.transition().duration(800)
+                    .call(d3.axisLeft(yScale).tickSize(-width).tickFormat(""));
+
+                const bars = task8Svg.selectAll(".bar")
+                    .data(chartData, d => d.condition);
+
+                bars.exit()
+                    .transition().duration(600).ease(d3.easeBackIn)
+                    .attr("y", height)
+                    .attr("height", 0)
+                    .style("opacity", 0)
+                    .remove();
+
+                const enterBars = bars.enter()
+                    .append("rect")
+                    .attr("class", "bar")
+                    .attr("x", d => xScale(d.condition))
+                    .attr("width", xScale.bandwidth())
+                    .attr("y", height)
+                    .attr("height", 0)
+                    .attr("rx", 6)
+                    .attr("fill", d => colorScale(d.avgTemp));
+
+                enterBars.merge(bars)
+                    .transition().duration(600).ease(d3.easeCubicOut)
+                    .delay((d, i) => i * 15)
+                    .attr("x", d => xScale(d.condition))
+                    .attr("width", xScale.bandwidth())
+                    .attr("y", d => yScale(d.avgTemp))
+                    .attr("height", d => height - yScale(d.avgTemp))
+                    .attr("fill", d => colorScale(d.avgTemp));
+
+                task8Svg.selectAll(".bar")
+                    .on("mouseover", function(event, d) {
+                        d3.select(this)
+                            .transition().duration(100)
+                            .attr("opacity", 0.7);
+
+                        chartTooltip.html(`
+                            <div class="tt-title">${d.condition}</div>
+                            <div class="tt-value">Nhiệt độ trung bình: <span>${d.avgTemp.toFixed(1)}°C</span></div>
+                        `);
+                        chartTooltip.classed("visible", true);
+                    })
+                    .on("mousemove", function(event) {
+                        chartTooltip.style("left", (event.pageX + 15) + "px")
+                            .style("top", (event.pageY - 30) + "px");
+                    })
+                    .on("mouseout", function() {
+                        d3.select(this)
+                            .transition().duration(200)
+                            .attr("opacity", 1);
+                        chartTooltip.classed("visible", false);
+                    });
+            }
+
+            function setSelectedRegion(region) {
+                selectedRegion = region;
+                d3.select("#regionFilter").property("value", region);
+
+                // Update region display
+                const display = d3.select("#regionDisplay");
+                if (region === "All") {
+                    display.html("");
+                } else {
+                    display.html(`<div class="region-badge">📌 Khu vực: ${region}</div>`);
+                }
+
+                // Update chart
+                updateChart(region);
+
+                // Highlight/dim circles on map
+                g.selectAll("circle")
+                    .classed("highlight", d => d["location.region"] === region && region !== "All")
+                    .classed("dim", d => d["location.region"] !== region && region !== "All");
+            }
+
+            updateChart("All");
+
+            // ============================================
+            // TASK 12 - CODE GỐC
+            // ============================================
+            const scatterMargin = { top: 20, right: 30, bottom: 50, left: 60 };
+            const scatterWidth = 1520 - scatterMargin.left - scatterMargin.right;
+            const scatterHeight = 330 - scatterMargin.top - scatterMargin.bottom;
+
+            const scatterContainer = d3.select("#scatter-container");
+            const scatterLoading = d3.select("#loading");
+
+            const scatterSvg = scatterContainer.append("svg")
+                .attr("viewBox", `0 0 ${scatterWidth + scatterMargin.left + scatterMargin.right} ${scatterHeight + scatterMargin.top + scatterMargin.bottom}`)
+                .append("g")
+                .attr("transform", `translate(${scatterMargin.left},${scatterMargin.top})`);
+
+            const processedData = weatherData.map(d => {
+                const sunriseTime = parseTime(d["astro.sunrise"]);
+                const sunsetTime = parseTime(d["astro.sunset"]);
+                const daylightDuration = sunsetTime - sunriseTime;
+
+                return {
+                    location: d["location.name"],
+                    date: d["date"],
+                    sunrise: d["astro.sunrise"],
+                    sunset: d["astro.sunset"],
+                    duration: daylightDuration,
+                    uv: parseFloat(d["day.uv"])
+                };
+            }).filter(d => !isNaN(d.duration) && !isNaN(d.uv) && d.duration > 0);
+
+            const xExtent = d3.extent(processedData, d => d.duration);
+            const xScale = d3.scaleLinear()
+                .domain([xExtent[0] - 0.2, xExtent[1] + 0.2])
+                .range([0, scatterWidth]);
+
+            const yScale = d3.scaleLinear()
+                .domain([0, d3.max(processedData, d => d.uv) + 1])
+                .range([scatterHeight, 0]);
+
+            scatterSvg.append("g")
+                .attr("class", "grid")
+                .attr("transform", `translate(0,${scatterHeight})`)
+                .call(d3.axisBottom(xScale).tickSize(-scatterHeight).tickFormat(""));
+
+            scatterSvg.append("g")
+                .attr("class", "grid")
+                .call(d3.axisLeft(yScale).tickSize(-scatterWidth).tickFormat(""));
+
+            scatterSvg.append("g")
+                .attr("transform", `translate(0,${scatterHeight})`)
+                .call(d3.axisBottom(xScale).ticks(8).tickFormat(d => d.toFixed(1) + " h"))
+                .append("text")
+                .attr("class", "axis-label")
+                .attr("x", scatterWidth / 2)
+                .attr("y", 40)
+                .attr("text-anchor", "middle")
+                .text("Độ dài ban ngày (Giờ)");
+
+            scatterSvg.append("g")
+                .call(d3.axisLeft(yScale).ticks(5))
+                .append("text")
+                .attr("class", "axis-label")
+                .attr("transform", "rotate(-90)")
+                .attr("x", -scatterHeight / 2)
+                .attr("y", -40)
+                .attr("text-anchor", "middle")
+                .text("Chỉ số UV (Max)");
+
+            const dots = scatterSvg.selectAll(".dot")
+                .data(processedData)
+                .enter()
+                .append("circle")
+                .attr("class", "dot")
+                .attr("cx", d => xScale(d.duration))
+                .attr("cy", scatterHeight)
+                .attr("r", 4)
+                .attr("fill", d => getUvColor(d.uv));
+
+            dots.transition()
+                .duration(600)
+                .ease(d3.easeCubicOut)
+                .attr("cy", d => yScale(d.uv));
+
+            const scatterTooltip = scatterContainer.append("div").attr("class", "tooltip");
+
+            dots.on("mouseover", function(event, d) {
+                const hrs = Math.floor(d.duration);
+                const mins = Math.round((d.duration - hrs) * 60);
+
+                scatterTooltip.html(`
+                    <div class="tt-header">${d.location} <span style="font-weight:400; font-size:12px; color:#64748b">(${d.date})</span></div>
+                    <div class="tt-stat"><span class="label">Mặt trời mọc:</span> <span class="value">${d.sunrise}</span></div>
+                    <div class="tt-stat"><span class="label">Mặt trời lặn:</span> <span class="value">${d.sunset}</span></div>
+                    <div class="tt-stat" style="margin-top:8px; border-top: 1px dashed #e2e8f0; padding-top:8px;">
+                        <span class="label">Tổng thời gian sáng:</span>
+                        <span class="value" style="color: #2563eb">${hrs}h ${mins}m</span>
+                    </div>
+                    <div class="tt-stat">
+                        <span class="label">Chỉ số UV:</span>
+                        <span class="value" style="color: ${getUvColor(d.uv)}; font-size: 15px">${d.uv}</span>
+                    </div>
+                `);
+
+                scatterTooltip.classed("visible", true)
+                    .style("left", (event.pageX + 15) + "px")
+                    .style("top", (event.pageY - 15) + "px");
+            })
+            .on("mousemove", function(event) {
+                scatterTooltip.style("left", (event.pageX + 15) + "px")
+                    .style("top", (event.pageY - 15) + "px");
+            })
+            .on("mouseout", function() {
+                scatterTooltip.classed("visible", false);
+            });
+
+            const legend = d3.select("#scatter-legend");
+            const uvRanges = [
+                { label: "Thấp (0-2)", color: "#10b981" },
+                { label: "Trung bình (3-5)", color: "#fbbf24" },
+                { label: "Cao (6-7)", color: "#f97316" },
+                { label: "Rất cao (8-10)", color: "#ef4444" },
+                { label: "Cực độ (11+)", color: "#8b5cf6" }
+            ];
+
+            legend.selectAll(".legend-item")
+                .data(uvRanges)
+                .enter()
+                .append("div")
+                .attr("class", "legend-item")
+                .html(d => `<div class="legend-color" style="background: ${d.color}"></div> ${d.label}`);
+
+        }).catch(error => {
+            console.error("Lỗi:", error);
+            d3.select("#loader")
+                .text("Lỗi tải dữ liệu! Hãy kiểm tra Live Server và tên file CSV.")
+                .style("color", "#dc2626");
+        });
+    </script>
+
+</body>
+</html>
