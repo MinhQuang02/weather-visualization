@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Task 9 - Trạng thái Thời tiết (Cột Ngang)</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f1f5f9; margin: 0; padding: 20px; color: #334155; display: flex; justify-content: center;}
+        .card { background: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); padding: 15px 25px; display: flex; flex-direction: column; align-items: center; position: relative; width: 900px;}
+        .card-header { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .card-title { font-size: 15px; font-weight: bold; color: #1e293b; border-left: 4px solid #3b82f6; padding-left: 8px;}
+        
+        .weather-bar, .metric-bar, .legend-item { transition: all 0.2s ease; cursor: pointer; }
+        .weather-bar:hover, .metric-bar:hover { opacity: 0.8; stroke: #333; stroke-width: 1.5px;}
+        .weather-bar { stroke: #fff; stroke-width: 0.5px; }
+        .metric-bar { stroke: #333; stroke-width: 0.5px; }
+        
+        .legend-item:hover { opacity: 0.7; }
+        .legend-item.inactive { opacity: 0.3; }
+        
+        .axis text { font-size: 11.5px; fill: #475569; }
+        .axis path, .axis line { stroke: #cbd5e1; }
+        
+        /* Lưới dọc mờ giúp dễ dóng tỷ lệ % */
+        .grid .tick line { stroke: #e2e8f0; stroke-dasharray: 4; }
+        .grid path { stroke-width: 0; }
+
+        #tooltip { position: absolute; opacity: 0; background: rgba(255, 255, 255, 0.98); border: 1px solid #cbd5e1; padding: 10px 14px; border-radius: 6px; pointer-events: none; font-size: 13px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 100; line-height: 1.5; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title" id="task9-title">Task 9: Tỷ lệ trạng thái thời tiết</div>
+        </div>
+        <div id="stacked-svg-container"></div>
+    </div>
+    <div id="tooltip"></div>
+
+    <script>
+        const tooltip = d3.select("#tooltip");
+        let csvDataGlobal, xStack, yStack, svgStack, stackH, stackW, stackGenerator;
+        
+        let drilledRegion = null;
+        let activeMetric = null; 
+
+        const weatherTypes = ["Nắng", "Nhiều mây", "Mưa", "Sương mù", "Tốc độ gió"];
+        const weatherColors = { "Nắng": "#f1c40f", "Nhiều mây": "#bdc3c7", "Mưa": "#3498db", "Sương mù": "#9b59b6", "Tốc độ gió": "#95a5a6" };
+        
+        const metricMapping = {
+            "Mưa": { field: "precip", name: "Lượng mưa TB", unit: " mm", color: "#3498db" },
+            "Nắng": { field: "uv", name: "Chỉ số UV TB", unit: " UV", color: "#f1c40f" },
+            "Sương mù": { field: "vis", name: "Tầm nhìn xa TB", unit: " km", color: "#9b59b6" },
+            "Nhiều mây": { field: "humid", name: "Độ ẩm TB", unit: "%", color: "#bdc3c7" },
+            "Tốc độ gió": { field: "wind", name: "Tốc độ gió TB", unit: " km/h", color: "#95a5a6" }
+        };
+
+        function categorizeWeather(text) {
+            if (!text) return "Tốc độ gió"; text = text.toLowerCase();
+            if (text.includes("rain") || text.includes("shower") || text.includes("drizzle") || text.includes("thunder") || text.includes("storm")) return "Mưa";
+            if (text.includes("sun") || text.includes("clear")) return "Nắng";
+            if (text.includes("cloud") || text.includes("overcast")) return "Nhiều mây";
+            if (text.includes("mist") || text.includes("fog")) return "Sương mù";
+            return "Tốc độ gió";
+        }
+
+        d3.csv("clean_weather_dataset .csv").then(data => {
+            data.forEach(d => { 
+                d.precip = +d["day.totalprecip_mm"]; d.uv = +d["day.uv"];
+                d.vis = +d["day.avgvis_km"]; d.humid = +d["day.avghumidity"]; d.wind = +d["day.maxwind_kph"];
+            });
+            csvDataGlobal = data;
+
+            // Chỉnh lại Margin cho cột ngang (Left margin rất rộng để chứa chữ)
+            const stackMargin = {top: 20, right: 120, bottom: 40, left: 230};
+            stackW = 900 - stackMargin.left - stackMargin.right; 
+            stackH = 450 - stackMargin.top - stackMargin.bottom;
+            
+            svgStack = d3.select("#stacked-svg-container").append("svg")
+                         .attr("width", stackW + stackMargin.left + stackMargin.right)
+                         .attr("height", stackH + stackMargin.top + stackMargin.bottom)
+                         .append("g").attr("transform", `translate(${stackMargin.left},${stackMargin.top})`);
+            
+            stackGenerator = d3.stack().keys(weatherTypes);
+            
+            // X-Axis (Đáy) bây giờ là Trục dữ liệu (Data Linear)
+            xStack = d3.scaleLinear().domain([0, 100]).range([0, stackW]);
+            
+            // Y-Axis (Trái) bây giờ là Trục phân loại Tên vùng (Band)
+            yStack = d3.scaleBand().range([0, stackH]).padding(0.35);
+
+            // Thêm lưới dọc
+            svgStack.append("g").attr("class", "grid x-grid").attr("transform", `translate(0, ${stackH})`);
+            
+            svgStack.append("g").attr("class", "x-axis").attr("transform", `translate(0, ${stackH})`);
+            svgStack.append("g").attr("class", "y-axis");
+
+            const legendStack = svgStack.append("g").attr("transform", `translate(${stackW + 20}, 0)`);
+            legendStack.append("text").attr("x", 0).attr("y", 0).style("font-weight", "bold").style("font-size", "12px").text("Chú thích");
+            
+            const legendItem = legendStack.selectAll(".legend-item").data(weatherTypes).enter().append("g")
+                .attr("class", "legend-item")
+                .attr("transform", (d, i) => `translate(0, ${i * 22 + 15})`)
+                .on("click", function(event, d) {
+                    if(activeMetric === d) {
+                        activeMetric = null;
+                        d3.selectAll(".legend-item").classed("inactive", false);
+                        d3.select("#task9-title").text("Task 9: Tỷ lệ các trạng thái thời tiết");
+                    } else {
+                        activeMetric = d;
+                        d3.selectAll(".legend-item").classed("inactive", true);
+                        d3.select(this).classed("inactive", false);
+                        d3.select("#task9-title").text(`Task 9: Phân tích ${metricMapping[d].name}`);
+                    }
+                    updateChart();
+                });
+
+            legendItem.append("rect").attr("x", 0).attr("y", 0).attr("width", 14).attr("height", 14).attr("rx", 2).style("fill", d => weatherColors[d]);
+            legendItem.append("text").attr("x", 22).attr("y", 11).style("font-size", "12px").text(d => d);
+
+            updateChart();
+        });
+
+        function updateChart() {
+            let chartData = [];
+            
+            let dataToProcess = csvDataGlobal;
+            if (drilledRegion) {
+                dataToProcess = csvDataGlobal.filter(d => d["location.region"] === drilledRegion);
+            }
+
+            let rollup = d3.rollup(dataToProcess, v => {
+                let counts = { "Nắng": 0, "Nhiều mây": 0, "Mưa": 0, "Sương mù": 0, "Tốc độ gió": 0 };
+                v.forEach(d => counts[categorizeWeather(d["day.condition.text"])]++);
+                
+                let pct = {}; weatherTypes.forEach(w => pct[w] = (counts[w] / v.length) * 100);
+                let met = {}; weatherTypes.forEach(w => met[w] = d3.mean(v, d => d[metricMapping[w].field]));
+                return { percentages: pct, metrics: met };
+            }, d => drilledRegion ? d["location.name"] : d["location.region"]);
+
+            chartData = Array.from(rollup, ([r, val]) => ({ region: r, percentages: val.percentages, metrics: val.metrics, isProvince: !!drilledRegion }));
+
+            // Sắp xếp
+            if (!activeMetric) chartData.sort((a,b) => b.percentages["Nắng"] - a.percentages["Nắng"]);
+            else chartData.sort((a,b) => b.metrics[activeMetric] - a.metrics[activeMetric]);
+
+            // Cập nhật trục Y (Tên Vùng/Tỉnh)
+            yStack.domain(chartData.map(d => d.region));
+            svgStack.select(".y-axis").transition().duration(400).call(d3.axisLeft(yStack))
+                    .selectAll("text").style("font-weight", drilledRegion ? "bold" : "normal").style("fill", "#1e293b");
+
+            if (activeMetric === null) {
+                // ================= CHẾ ĐỘ 1: VẼ STACK 100% (NGANG) =================
+                svgStack.selectAll(".metric-bar").interrupt().transition().duration(300).attr("width", 0).remove();
+                
+                xStack.domain([0, 100]);
+                svgStack.select(".x-axis").transition().duration(400).call(d3.axisBottom(xStack).ticks(5).tickFormat(d => d + "%"));
+                svgStack.select(".x-grid").transition().duration(400).call(d3.axisBottom(xStack).tickSize(-stackH).tickFormat(""));
+
+                let stackInput = chartData.map(d => { let obj = { region: d.region, isProvince: d.isProvince }; weatherTypes.forEach(w => obj[w] = d.percentages[w]); return obj; });
+                let stackedSeries = stackGenerator(stackInput);
+                let rectData = [];
+                stackedSeries.forEach(series => { series.forEach(d => rectData.push({ key: series.key, region: d.data.region, x0: d[0], x1: d[1], isProvince: d.data.isProvince })); });
+
+                const wBars = svgStack.selectAll(".weather-bar").data(rectData, d => d.region + "_" + d.key);
+                wBars.exit().interrupt().transition().duration(300).attr("width", 0).remove();
+
+                const wBarsEnter = wBars.enter().append("rect").attr("class", "weather-bar")
+                    .attr("y", d => yStack(d.region)).attr("x", d => xStack(d.x0)).attr("height", yStack.bandwidth()).attr("width", 0);
+
+                wBarsEnter.merge(wBars)
+                    .on("click", function(event, d) {
+                        if (!d.isProvince) { drilledRegion = d.region; } else { drilledRegion = null; }
+                        updateChart();
+                    })
+                    .on("mouseover", function(event, d) {
+                        tooltip.transition().duration(100).style("opacity", 1);
+                        let title = d.isProvince ? "📍 Tỉnh" : "Vùng";
+                        tooltip.html(`<b>${title}:</b> ${d.region}<br>Thời tiết: <b>${d.key}</b><br>Tỷ lệ: <b>${(d.x1 - d.x0).toFixed(1)}%</b>`)
+                               .style("left", (event.pageX + 15) + "px").style("top", (event.pageY - 30) + "px").style("border-left", `4px solid ${weatherColors[d.key]}`);
+                    })
+                    .on("mouseout", () => tooltip.style("opacity", 0))
+                    .interrupt().transition().duration(400)
+                    .attr("y", d => yStack(d.region))
+                    .attr("height", yStack.bandwidth())
+                    .attr("x", d => xStack(d.x0))
+                    .attr("width", d => xStack(d.x1) - xStack(d.x0))
+                    .attr("fill", d => weatherColors[d.key]);
+
+            } else {
+                // ================= CHẾ ĐỘ 2: VẼ CỘT METRIC ĐẠI LƯỢNG (NGANG) =================
+                svgStack.selectAll(".weather-bar").interrupt().transition().duration(300).attr("width", 0).remove();
+                
+                let metricInfo = metricMapping[activeMetric];
+                let maxVal = d3.max(chartData, d => d.metrics[activeMetric]);
+                xStack.domain([0, maxVal * 1.15]); 
+                
+                svgStack.select(".x-axis").transition().duration(400).call(d3.axisBottom(xStack).ticks(5).tickFormat(d => d + metricInfo.unit));
+                svgStack.select(".x-grid").transition().duration(400).call(d3.axisBottom(xStack).tickSize(-stackH).tickFormat(""));
+
+                let rectData = chartData.map(d => ({ region: d.region, val: d.metrics[activeMetric], isProvince: d.isProvince }));
+
+                const mBars = svgStack.selectAll(".metric-bar").data(rectData, d => d.region);
+                mBars.exit().interrupt().transition().duration(300).attr("width", 0).remove();
+
+                const mBarsEnter = mBars.enter().append("rect").attr("class", "metric-bar")
+                    .attr("y", d => yStack(d.region)).attr("x", 0).attr("height", yStack.bandwidth()).attr("width", 0);
+
+                mBarsEnter.merge(mBars)
+                    .on("click", function(event, d) {
+                        if (!d.isProvince) { drilledRegion = d.region; } else { drilledRegion = null; }
+                        updateChart();
+                    })
+                    .on("mouseover", function(event, d) {
+                        tooltip.transition().duration(100).style("opacity", 1);
+                        let title = d.isProvince ? "📍 Tỉnh" : "Vùng";
+                        tooltip.html(`<b>${title}:</b> ${d.region}<br><b>${metricInfo.name}:</b> <span style='font-weight:bold; color:${metricInfo.color}'>${d.val.toFixed(2)}${metricInfo.unit}</span>`)
+                               .style("left", (event.pageX + 15) + "px").style("top", (event.pageY - 30) + "px").style("border-left", `4px solid ${metricInfo.color}`);
+                    })
+                    .on("mouseout", () => tooltip.style("opacity", 0))
+                    .interrupt().transition().duration(400)
+                    .attr("y", d => yStack(d.region))
+                    .attr("height", yStack.bandwidth())
+                    .attr("x", 0)
+                    .attr("width", d => xStack(d.val))
+                    .attr("fill", metricInfo.color)
+                    .attr("rx", 3);
+            }
+        }
+    </script>
+</body>
+</html>

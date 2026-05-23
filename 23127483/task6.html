@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Task 6 - Bản đồ Trạm đo</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f1f5f9; margin: 0; padding: 20px; color: #334155; display: flex; justify-content: center;}
+        .card { background: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); padding: 15px 25px; display: flex; flex-direction: column; align-items: center; position: relative; width: 500px;}
+        .card-title { font-size: 15px; font-weight: bold; color: #1e293b; border-left: 4px solid #3b82f6; padding-left: 8px; width: 100%; text-align: left; margin-bottom: 15px;}
+        
+        .province, .station-dot { transition: all 0.2s ease; cursor: pointer; }
+        .province { stroke: #475569; stroke-width: 0.5px; }
+        .station-dot { stroke: #fff; stroke-width: 1px; }
+
+        .province:hover { opacity: 0.8; stroke: #000; stroke-width: 1px; }
+        .station-dot:hover { r: 8px; stroke: #e74c3c; stroke-width: 2px; opacity: 1 !important; z-index: 10;}
+        .province.fade, .station-dot.fade { opacity: 0.3; }
+
+        /* Định dạng khung Tooltip */
+        #tooltip { position: absolute; opacity: 0; background: rgba(255, 255, 255, 0.98); border: 1px solid #cbd5e1; padding: 10px 14px; border-radius: 6px; pointer-events: none; font-size: 13px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 100; line-height: 1.5; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="card-title">Task 6: Bản đồ Trạm đo & Phân vùng</div>
+        <div id="map-svg-container"></div>
+    </div>
+    <div id="tooltip"></div>
+
+    <script>
+        const colorPalette = {
+            "Trung du và miền núi Bắc Bộ": { bg: "#d1f2eb", dot: "#117a65" }, "Đồng Bằng Sông Hồng": { bg: "#fadbd8", dot: "#b03a2e" },         
+            "Bắc Trung Bộ và Duyên hải miền Trung": { bg: "#fdebd0", dot: "#b9770e" }, "Tây Nguyên": { bg: "#ebdef0", dot: "#6c3483" },                   
+            "Đông Nam Bộ": { bg: "#d6eaf8", dot: "#2874a6" }, "Đồng Bằng Sông Cửu Long": { bg: "#d4efdf", dot: "#1e8449" }       
+        };
+        const provinceMapping = { "An Giang": "Đồng Bằng Sông Cửu Long", "Bà Rịa-Vũng Tàu": "Đông Nam Bộ", "Bắc Giang": "Trung du và miền núi Bắc Bộ", "Bắc Kạn": "Trung du và miền núi Bắc Bộ", "Bạc Liêu": "Đồng Bằng Sông Cửu Long", "Bắc Ninh": "Đồng Bằng Sông Hồng", "Bến Tre": "Đồng Bằng Sông Cửu Long", "Bình Định": "Bắc Trung Bộ và Duyên hải miền Trung", "Bình Dương": "Đông Nam Bộ", "Bình Phước": "Đông Nam Bộ", "Bình Thuận": "Bắc Trung Bộ và Duyên hải miền Trung", "Cà Mau": "Đồng Bằng Sông Cửu Long", "Cần Thơ": "Đồng Bằng Sông Cửu Long", "Cao Bằng": "Trung du và miền núi Bắc Bộ", "Đà Nẵng": "Bắc Trung Bộ và Duyên hải miền Trung", "Đắk Lắk": "Tây Nguyên", "Đắk Nông": "Tây Nguyên", "Điện Biên": "Trung du và miền núi Bắc Bộ", "Đồng Nai": "Đông Nam Bộ", "Đồng Tháp": "Đồng Bằng Sông Cửu Long", "Gia Lai": "Tây Nguyên", "Hà Giang": "Trung du và miền núi Bắc Bộ", "Hà Nam": "Đồng Bằng Sông Hồng", "Hà Nội": "Đồng Bằng Sông Hồng", "Hà Tĩnh": "Bắc Trung Bộ và Duyên hải miền Trung", "Hải Dương": "Đồng Bằng Sông Hồng", "Hải Phòng": "Đồng Bằng Sông Hồng", "Hậu Giang": "Đồng Bằng Sông Cửu Long", "TP. Hồ Chí Minh": "Đông Nam Bộ", "Hòa Bình": "Trung du và miền núi Bắc Bộ", "Hưng Yên": "Đồng Bằng Sông Hồng", "Khánh Hòa": "Bắc Trung Bộ và Duyên hải miền Trung", "Kiên Giang": "Đồng Bằng Sông Cửu Long", "Kon Tum": "Tây Nguyên", "Lai Châu": "Trung du và miền núi Bắc Bộ", "Lâm Đồng": "Tây Nguyên", "Lạng Sơn": "Trung du và miền núi Bắc Bộ", "Lào Cai": "Trung du và miền núi Bắc Bộ", "Long An": "Đồng Bằng Sông Cửu Long", "Nam Định": "Đồng Bằng Sông Hồng", "Nghệ An": "Bắc Trung Bộ và Duyên hải miền Trung", "Ninh Bình": "Đồng Bằng Sông Hồng", "Ninh Thuận": "Bắc Trung Bộ và Duyên hải miền Trung", "Phú Thọ": "Đồng Bằng Sông Hồng", "Phú Yên": "Bắc Trung Bộ và Duyên hải miền Trung", "Quảng Bình": "Bắc Trung Bộ và Duyên hải miền Trung", "Quảng Nam": "Bắc Trung Bộ và Duyên hải miền Trung", "Quảng Ngãi": "Bắc Trung Bộ và Duyên hải miền Trung", "Quảng Ninh": "Trung du và miền núi Bắc Bộ", "Quảng Trị": "Bắc Trung Bộ và Duyên hải miền Trung", "Sóc Trăng": "Đồng Bằng Sông Cửu Long", "Sơn La": "Trung du và miền núi Bắc Bộ", "Tây Ninh": "Đông Nam Bộ", "Thái Bình": "Đồng Bằng Sông Hồng", "Thái Nguyên": "Trung du và miền núi Bắc Bộ", "Thanh Hóa": "Bắc Trung Bộ và Duyên hải miền Trung", "Thừa Thiên - Huế": "Bắc Trung Bộ và Duyên hải miền Trung", "Tiền Giang": "Đồng Bằng Sông Cửu Long", "Trà Vinh": "Đồng Bằng Sông Cửu Long", "Tuyên Quang": "Trung du và miền núi Bắc Bộ", "Vĩnh Long": "Đồng Bằng Sông Cửu Long", "Vĩnh Phúc": "Đồng Bằng Sông Hồng", "Yên Bái": "Trung du và miền núi Bắc Bộ" };
+        
+        function normalizeName(name) { return name.toLowerCase().replace(/thành phố |tỉnh |tp\. | - /gi, "").replace(/[\s-]/g, ""); }
+        const normalizedMapping = {}; for (let p in provinceMapping) { normalizedMapping[normalizeName(p)] = provinceMapping[p]; }
+        const tooltip = d3.select("#tooltip");
+
+        Promise.all([
+            d3.csv("clean_weather_dataset .csv"),
+            d3.json("https://raw.githubusercontent.com/TungTh/tungth.github.io/master/data/vn-provinces.json")
+        ]).then(([csvData, geoData]) => {
+            const mapW = 450, mapH = 750;
+            const svgMap = d3.select("#map-svg-container").append("svg").attr("width", mapW).attr("height", mapH);
+            const projection = d3.geoMercator().center([106.3, 16.2]).scale(2600).translate([mapW / 2, mapH / 2]);
+            const mapPath = d3.geoPath().projection(projection);
+
+            // Vẽ bản đồ các tỉnh nền
+            svgMap.append("g").selectAll(".province").data(geoData.features).enter().append("path")
+                .attr("class", "province").attr("d", mapPath)
+                .attr("fill", d => {
+                    let r = normalizedMapping[normalizeName(d.properties.Name)];
+                    return r ? colorPalette[r].bg : "#f1f5f9";
+                })
+                .on("mouseover", function(event, d) {
+                    let pName = d.properties.Name;
+                    let r = normalizedMapping[normalizeName(pName)] || "Chưa có dữ liệu";
+                    
+                })
+                .on("mouseout", function() {
+
+                    d3.selectAll(".province").classed("fade", false);
+                    d3.selectAll(".station-dot").classed("fade", false);
+                    tooltip.style("opacity", 0);
+                });
+
+            const stations = Array.from(d3.group(csvData, d => d["location.name"]), ([name, value]) => ({
+                name: name, region: value[0]["location.region"], lat: +value[0]["location.lat"], lon: +value[0]["location.lon"]
+            }));
+
+            // Vẽ các chấm điểm đo lên tầng trên cùng (Top layer) của bản đồ
+            svgMap.append("g").selectAll(".station-dot").data(stations).enter().append("circle")
+                .attr("class", "station-dot")
+                .attr("data-region", d => d.region)
+                .attr("cx", d => projection([d.lon, d.lat])[0]).attr("cy", d => projection([d.lon, d.lat])[1]).attr("r", 4)
+                .attr("fill", d => colorPalette[d.region] ? colorPalette[d.region].dot : "#333")
+                .on("mouseover", function(event, d) {
+                    // HIỂN THỊ TOOLTIP: Chỉ kích hoạt khi chạm chính xác vào chấm tròn trạm đo
+                    tooltip.transition().duration(100).style("opacity", 1);
+                    tooltip.html(`📍 <b>Trạm đo:</b> ${d.name}<br>🏢 <b>Thuộc vùng:</b> ${d.region}`)
+                           .style("left", (event.pageX + 15) + "px").style("top", (event.pageY - 20) + "px")
+                           .style("border-left", `4px solid ${colorPalette[d.region].dot}`);
+                })
+                .on("mouseout", () => tooltip.style("opacity", 0));
+        });
+    </script>
+</body>
+</html>

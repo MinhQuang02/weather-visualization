@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Task 2 - Nhiệt độ Trung bình (Cột Ngang)</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f1f5f9; margin: 0; padding: 20px; color: #334155; display: flex; justify-content: center;}
+        .card { background: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); padding: 15px 25px; display: flex; flex-direction: column; align-items: center; position: relative; width: 900px;}
+        .card-header { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .card-title { font-size: 15px; font-weight: bold; color: #1e293b; border-left: 4px solid #3b82f6; padding-left: 8px;}
+        .toggle-btn { background-color: #3b82f6; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.2s;}
+        .toggle-btn:hover { background-color: #2563eb; } .toggle-btn.off { background-color: #94a3b8; }
+        
+        .bar { transition: all 0.2s ease; cursor: pointer; }
+        .bar:hover { opacity: 0.8; stroke: #333; stroke-width: 1.5px; }
+        
+        .axis text { font-size: 11.5px; fill: #475569; }
+        .axis path, .axis line { stroke: #cbd5e1; }
+        
+        /* Lưới dọc mờ giúp dễ dóng nhiệt độ */
+        .grid .tick line { stroke: #e2e8f0; stroke-dasharray: 4; }
+        .grid path { stroke-width: 0; }
+
+        #tooltip { position: absolute; opacity: 0; background: rgba(255, 255, 255, 0.98); border: 1px solid #cbd5e1; padding: 10px 14px; border-radius: 6px; pointer-events: none; font-size: 13px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 100; line-height: 1.5; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Task 2: So sánh nhiệt độ trung bình (Bản đồ Nhiệt)</div>
+            <button id="toggle-btn" class="toggle-btn" onclick="toggleRegion()">Mô hình: Đang Hiện Vùng</button>
+        </div>
+        <div id="bar-svg-container"></div>
+    </div>
+    <div id="tooltip"></div>
+
+    <script>
+        const tooltip = d3.select("#tooltip");
+
+        let csvDataGlobal, xBar, yBar, svgBar, barH, barW;
+        let showRegions = true;
+        let drilledRegion = null;
+        let tempColorScale;
+
+        window.toggleRegion = function() {
+            if (drilledRegion) return; 
+            showRegions = !showRegions;
+            const btn = document.getElementById("toggle-btn");
+            btn.innerText = showRegions ? "Mô hình: Đang Hiện Vùng" : "Mô hình: Chỉ Hiện Điểm/Tỉnh";
+            btn.className = showRegions ? "toggle-btn" : "toggle-btn off";
+            updateChart();
+        };
+
+        d3.csv("clean_weather_dataset .csv").then(data => {
+            data.forEach(d => { d.temp = +d["day.avgtemp_c"]; });
+            csvDataGlobal = data;
+
+            const barMargin = {top: 20, right: 30, bottom: 40, left: 230};
+            barW = 900 - barMargin.left - barMargin.right; 
+            barH = 450 - barMargin.top - barMargin.bottom; 
+
+            svgBar = d3.select("#bar-svg-container").append("svg")
+                       .attr("width", barW + barMargin.left + barMargin.right)
+                       .attr("height", barH + barMargin.top + barMargin.bottom)
+                       .append("g").attr("transform", `translate(${barMargin.left},${barMargin.top})`);
+            
+            // X là Nhiệt độ (Linear Scale)
+            xBar = d3.scaleLinear().range([0, barW]);
+            // Y là Tên Vùng/Tỉnh (Band Scale)
+            yBar = d3.scaleBand().range([0, barH]).padding(0.35);
+            
+            tempColorScale = d3.scaleLinear()
+                               .domain([18, 24, 29]) // Khoảng nhiệt độ phổ biến của VN
+                               .range(["#3498db", "#f1c40f", "#e74c3c"])
+                               .interpolate(d3.interpolateHcl); // Nội suy màu mượt mà
+            
+            // Lưới dọc nền
+            svgBar.append("g").attr("class", "grid x-grid").attr("transform", `translate(0, ${barH})`);
+
+            svgBar.append("g").attr("class", "x-axis").attr("transform", `translate(0, ${barH})`);
+            svgBar.append("g").attr("class", "y-axis");
+
+            updateChart();
+        });
+
+        function updateChart() {
+            let chartData = [];
+
+            if (drilledRegion) {
+                // Chế độ Drill-down: Lấy các tỉnh của Vùng
+                let rows = csvDataGlobal.filter(d => d["location.region"] === drilledRegion);
+                let rollup = d3.rollup(rows, v => d3.mean(v, d => d.temp), d => d["location.name"]);
+                chartData = Array.from(rollup, ([r, val]) => ({ region: r, val: val, isProvince: true, parent: drilledRegion })).sort((a,b) => b.val - a.val);
+            } else if (showRegions) {
+                // Chế độ Mặc định: Lấy 6 Vùng
+                let rollup = d3.rollup(csvDataGlobal, v => d3.mean(v, d => d.temp), d => d["location.region"]);
+                chartData = Array.from(rollup, ([r, val]) => ({ region: r, val: val, isProvince: false })).sort((a,b) => b.val - a.val);
+            } else {
+                // Chế độ Tắt vùng: Lấy tất cả các tỉnh
+                let rollup = d3.rollup(csvDataGlobal, v => d3.mean(v, d => d.temp), d => d["location.name"]);
+                chartData = Array.from(rollup, ([r, val]) => ({ region: r, val: val, isProvince: true, parent: csvDataGlobal.find(x=>x["location.name"]===r)["location.region"] })).sort((a,b) => b.val - a.val);
+            }
+
+            xBar.domain([0, d3.max(chartData, d => d.val) * 1.1]); 
+            yBar.domain(chartData.map(d => d.region));
+            svgBar.select(".x-grid").transition().duration(400).call(d3.axisBottom(xBar).tickSize(-barH).tickFormat(""));
+
+            // Vẽ trục X và Y
+            svgBar.select(".x-axis").transition().duration(400).call(d3.axisBottom(xBar).ticks(6).tickFormat(d => d + "°C"));
+            
+            svgBar.select(".y-axis").transition().duration(400).call(d3.axisLeft(yBar))
+                  .selectAll("text")
+                  .style("font-weight", d => drilledRegion ? "bold" : "normal")
+                  .style("fill", "#1e293b");
+
+            // DATA JOIN (Mô hình Cột)
+            const bars = svgBar.selectAll(".bar").data(chartData, d => d.region);
+            
+            // Các cột bị thoát ra sẽ co chiều ngang về 0
+            bars.exit().interrupt().transition().duration(300).attr("width", 0).remove();
+            
+            const barsEnter = bars.enter().append("rect").attr("class", "bar")
+                                  .attr("x", 0) 
+                                  .attr("y", d => yBar(d.region))
+                                  .attr("height", yBar.bandwidth())
+                                  .attr("width", 0);
+
+            // Cập nhật các cột đang hiện hữu
+            barsEnter.merge(bars)
+                .on("click", function(event, d) {
+                    if (!d.isProvince) { drilledRegion = d.region; } 
+                    else if (drilledRegion) { drilledRegion = null; }
+                    updateChart();
+                })
+                .on("mouseover", function(event, d) {
+                    tooltip.transition().duration(100).style("opacity", 1);
+                    let title = d.isProvince ? "📍 Tỉnh" : "Vùng";
+                    let tipColor = tempColorScale(d.val); // Đồng bộ màu viền tooltip với màu cột
+                    
+                    tooltip.html(`<b>${title}:</b> ${d.region}<br><b>Nhiệt độ TB:</b> <span style='font-weight:bold; color:${tipColor};'>${d.val.toFixed(2)}°C</span>`)
+                           .style("left", (event.pageX + 15) + "px").style("top", (event.pageY - 20) + "px")
+                           .style("border-left", `4px solid ${tipColor}`);
+                })
+                .on("mouseout", () => tooltip.style("opacity", 0))
+                .interrupt().transition().duration(400)
+                .attr("x", 0)
+                .attr("y", d => yBar(d.region))
+                .attr("height", yBar.bandwidth())
+                .attr("width", d => xBar(d.val))
+                .attr("fill", d => tempColorScale(d.val)) 
+                .attr("stroke", d => d.isProvince ? "#333" : "none")
+                .attr("stroke-width", d => d.isProvince ? "0.5px" : "0px")
+                .attr("rx", 3); 
+        }
+    </script>
+</body>
+</html>
