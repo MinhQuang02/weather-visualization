@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phân Tích Tần Suất Trạng Thái Thời Tiết</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --bar-color: #0d9488; /* Màu xanh mòng két (Teal) sang trọng */
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .chart-card {
+            width: 100%;
+            max-width: 950px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            color: #0f172a;
+            font-size: 24px;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 15px;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        svg {
+            width: 100%;
+            height: auto;
+            overflow: visible;
+        }
+
+        /* Định dạng trục */
+        .axis text {
+            font-size: 12px;
+            fill: #475569;
+            font-weight: 500;
+        }
+        .axis path, .axis line { stroke: #cbd5e1; }
+        
+        /* Trục Y không cần hiển thị đường kẽ dọc dài */
+        .y-axis path { stroke: none; }
+        .y-axis line { stroke: none; }
+
+        /* Lưới nền dọc */
+        .grid line { stroke: #f1f5f9; stroke-width: 1px; }
+        .grid path { stroke: none; }
+
+        /* Hiệu ứng tương tác cho Cột */
+        .bar {
+            cursor: pointer;
+            transition: opacity 0.2s ease, fill 0.2s ease;
+        }
+        .bar:hover {
+            opacity: 0.85;
+            fill: #0f766e;
+        }
+
+        /* Định dạng Tooltip */
+        .tooltip {
+            position: absolute;
+            background: rgba(15, 23, 42, 0.95);
+            color: #ffffff;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            pointer-events: none;
+            opacity: 0;
+            z-index: 100;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chart-card">
+        <h2>Phân Tích Tần Suất Trạng Thái Thời Tiết</h2>
+        <p class="subtitle">Biểu đồ thống kê số lượng tỉnh/thành phố đang trải qua từng hình thái thời tiết cụ thể, được sắp xếp theo mức độ phổ biến giảm dần.</p>
+        
+        <div id="horizontal-bar-chart"></div>
+    </div>
+
+    <div class="tooltip" id="chart-tooltip"></div>
+
+    <script>
+        // 1. THIẾT LẬP KÍCH THƯỚC (Để lề trái rộng 220px để chứa tên thời tiết dài)
+        const margin = { top: 20, right: 60, bottom: 50, left: 220 };
+        const width = 900;
+        const height = 550;
+        
+        const innerWidth = width - margin.left - margin.right;
+        const innerHeight = height - margin.top - margin.bottom;
+
+        const svg = d3.select("#horizontal-bar-chart")
+            .append("svg")
+            .attr("viewBox", `0 0 ${width} ${height}`)
+            .append("g")
+            .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+        const tooltip = d3.select("#chart-tooltip");
+
+        // 2. TẢI VÀ XỬ LÝ DỮ LIỆU
+        d3.csv("clean_weather_dataset.csv").then(rawData => {
+            
+            // Lọc dữ liệu: Chỉ lấy 1 bản ghi duy nhất cho mỗi tỉnh thành
+            const uniqueProvinces = new Map();
+            rawData.forEach(d => {
+                const province = d["location.name"];
+                const condition = d["day.condition.text"];
+
+                if (province && condition && !uniqueProvinces.has(province)) {
+                    uniqueProvinces.set(province, condition);
+                }
+            });
+
+            const dataList = Array.from(uniqueProvinces.values());
+
+            // Gom nhóm và đếm tần suất của từng Trạng thái thời tiết (Condition)
+            const conditionCounts = Array.from(d3.rollup(dataList, 
+                v => v.length, 
+                d => d
+            ), ([condition, count]) => ({ condition, count }));
+
+            // Sắp xếp dữ liệu giảm dần theo số lượng (Tần suất)
+            conditionCounts.sort((a, b) => b.count - a.count);
+
+            // 3. THIẾT LẬP THANG ĐO (SCALES)
+            // Trục X (Chiều ngang) thể hiện Số lượng (Tần suất)
+            const xScale = d3.scaleLinear()
+                .domain([0, d3.max(conditionCounts, d => d.count)])
+                .nice()
+                .range([0, innerWidth]);
+
+            // Trục Y (Chiều dọc) thể hiện Danh mục Trạng thái thời tiết
+            const yScale = d3.scaleBand()
+                .domain(conditionCounts.map(d => d.condition))
+                .range([0, innerHeight])
+                .paddingInner(0.2) // Khoảng cách giữa các cột
+                .paddingOuter(0.1);
+
+            // 4. VẼ LƯỚI NỀN (GRIDLINES - Theo chiều dọc)
+            svg.append("g")
+                .attr("class", "grid")
+                .attr("transform", `translate(0, ${innerHeight})`)
+                .call(d3.axisBottom(xScale)
+                    .tickSize(-innerHeight)
+                    .tickFormat("")
+                    .ticks(6)
+                );
+
+            // 5. VẼ TRỤC TỌA ĐỘ
+            // Trục X
+            svg.append("g")
+                .attr("class", "axis x-axis")
+                .attr("transform", `translate(0, ${innerHeight})`)
+                .call(d3.axisBottom(xScale).ticks(6));
+
+            // Trục Y (Hiển thị tên thời tiết)
+            svg.append("g")
+                .attr("class", "axis y-axis")
+                .call(d3.axisLeft(yScale));
+
+            // Tiêu đề cho trục X
+            svg.append("text")
+                .attr("x", innerWidth / 2)
+                .attr("y", innerHeight + 40)
+                .style("text-anchor", "middle")
+                .style("font-size", "13px")
+                .style("font-weight", "600")
+                .style("fill", "#475569")
+                .text("Số lần xuất hiện (Số tỉnh/thành phố)");
+
+            // 6. VẼ CÁC CỘT (BARS) CÓ HIỆU ỨNG
+            const bars = svg.selectAll(".bar")
+                .data(conditionCounts)
+                .enter()
+                .append("g");
+
+            bars.append("rect")
+                .attr("class", "bar")
+                .attr("y", d => yScale(d.condition))
+                .attr("height", yScale.bandwidth())
+                .attr("x", 0)
+                .attr("fill", "var(--bar-color)")
+                .attr("rx", 3) // Bo góc cột
+                // Gắn Tooltip
+                .on("mouseover", function(event, d) {
+                    tooltip.style("opacity", 1)
+                        .html(`
+                            ☁️ <strong>Trạng thái:</strong> ${d.condition}<br/>
+                            📊 <strong>Tần suất:</strong> ${d.count} địa phương
+                        `);
+                })
+                .on("mousemove", function(event) {
+                    tooltip.style("left", (event.pageX + 15) + "px")
+                           .style("top", (event.pageY - 15) + "px");
+                })
+                .on("mouseout", function() {
+                    tooltip.style("opacity", 0);
+                })
+                // Hiệu ứng Transition kéo dài cột từ trái sang phải
+                .attr("width", 0)
+                .transition()
+                .duration(1000)
+                .ease(d3.easeCubicOut)
+                .attr("width", d => xScale(d.count));
+
+            // 7. THÊM SỐ LIỆU TRỰC TIẾP VÀO CUỐI MỖI CỘT
+            bars.append("text")
+                .attr("y", d => yScale(d.condition) + yScale.bandwidth() / 2)
+                .attr("x", 0)
+                .attr("dy", "0.35em")
+                .style("font-size", "12px")
+                .style("font-weight", "600")
+                .style("fill", "#334155")
+                // Hiệu ứng số di chuyển theo cột
+                .transition()
+                .duration(1000)
+                .ease(d3.easeCubicOut)
+                .attr("x", d => xScale(d.count) + 8) // Dịch ra ngoài cột 8px
+                .text(d => d.count);
+
+        }).catch(error => {
+            console.error("Lỗi khi đọc file dữ liệu: ", error);
+            d3.select("#horizontal-bar-chart").html("<p style='color:red;'>Lỗi tải file dữ liệu 'clean_weather_dataset.csv'.</p>");
+        });
+    </script>
+</body>
+</html>
