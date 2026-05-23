@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSC10108 - Weather Data Dashboard</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+
+<body>
+  <header class="dashboard-header">
+    <div>
+      <p class="course-label">CSC10108</p>
+      <h1>Weather Data Dashboard</h1>
+    </div>
+
+    <section class="global-filter" aria-label="Region filter">
+      <span>Region</span>
+      <div id="region-checkbox-group" class="region-checkbox-group"></div>
+    </section>
+  </header>
+
+  <main class="dashboard-shell">
+    <div id="dashboard-grid">
+      <section class="dashboard-card dashboard-card-wide">
+        <div class="chart-card-header">
+          <div>
+            <h2>Task 1</h2>
+            <p>Monthly average temperature by region</p>
+          </div>
+        </div>
+        <div id="chart-container-1" class="chart-container"></div>
+      </section>
+
+      <section class="dashboard-card dashboard-card-bar">
+        <div class="chart-card-header">
+          <div>
+            <h2>Task 2</h2>
+            <p>Average temperature comparison by region</p>
+          </div>
+        </div>
+        <div id="chart-container-2" class="chart-container"></div>
+      </section>
+
+      <section class="dashboard-card dashboard-card-heatmap">
+        <div class="chart-card-header">
+          <div>
+            <h2>Task 3</h2>
+            <p>Weather metric heatmap by region</p>
+          </div>
+        </div>
+        <div id="chart-container-3" class="chart-container"></div>
+      </section>
+    </div>
+  </main>
+
+  <div id="custom-tooltip" class="custom-tooltip"></div>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

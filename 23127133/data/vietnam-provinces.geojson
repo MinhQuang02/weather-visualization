@@ -1,0 +1,2401 @@
+{
+    "type":  "FeatureCollection",
+    "name":  "vietnam-provinces-generated-from-weather-centroids",
+    "generated_note":  "Approximate province polygons generated from CSV centroid coordinates for local D3 rendering.",
+    "features":  [
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "An Giang",
+                                            "NAME_1":  "An Giang",
+                                            "province":  "An Giang",
+                                            "ten_tinh":  "An Giang",
+                                            "region":  "Đồng Bằng Sông Cửu Long",
+                                            "terrain":  "đồng bằng",
+                                            "centroid_lat":  10.7,
+                                            "centroid_lon":  105.1167
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  104.9367,
+                                                                  10.52
+                                                              ],
+                                                              [
+                                                                  105.2967,
+                                                                  10.52
+                                                              ],
+                                                              [
+                                                                  105.2967,
+                                                                  10.88
+                                                              ],
+                                                              [
+                                                                  104.9367,
+                                                                  10.88
+                                                              ],
+                                                              [
+                                                                  104.9367,
+                                                                  10.52
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Bà Rịa-Vũng Tàu",
+                                            "NAME_1":  "Bà Rịa-Vũng Tàu",
+                                            "province":  "Bà Rịa-Vũng Tàu",
+                                            "ten_tinh":  "Bà Rịa-Vũng Tàu",
+                                            "region":  "Đông Nam Bộ",
+                                            "terrain":  "ven biển",
+                                            "centroid_lat":  10.35,
+                                            "centroid_lon":  107.0667
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  106.8867,
+                                                                  10.17
+                                                              ],
+                                                              [
+                                                                  107.2467,
+                                                                  10.17
+                                                              ],
+                                                              [
+                                                                  107.2467,
+                                                                  10.53
+                                                              ],
+                                                              [
+                                                                  106.8867,
+                                                                  10.53
+                                                              ],
+                                                              [
+                                                                  106.8867,
+                                                                  10.17
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Bắc Giang",
+                                            "NAME_1":  "Bắc Giang",
+                                            "province":  "Bắc Giang",
+                                            "ten_tinh":  "Bắc Giang",
+                                            "region":  "Trung du và miền núi Bắc Bộ",
+                                            "terrain":  "miền núi",
+                                            "centroid_lat":  21.2667,
+                                            "centroid_lon":  106.2
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  106.02,
+                                                                  21.0867
+                                                              ],
+                                                              [
+                                                                  106.38,
+                                                                  21.0867
+                                                              ],
+                                                              [
+                                                                  106.38,
+                                                                  21.4467
+                                                              ],
+                                                              [
+                                                                  106.02,
+                                                                  21.4467
+                                                              ],
+                                                              [
+                                                                  106.02,
+                                                                  21.0867
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Bắc Kạn",
+                                            "NAME_1":  "Bắc Kạn",
+                                            "province":  "Bắc Kạn",
+                                            "ten_tinh":  "Bắc Kạn",
+                                            "region":  "Trung du và miền núi Bắc Bộ",
+                                            "terrain":  "miền núi",
+                                            "centroid_lat":  22.1333,
+                                            "centroid_lon":  105.8333
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  105.6533,
+                                                                  21.9533
+                                                              ],
+                                                              [
+                                                                  106.0133,
+                                                                  21.9533
+                                                              ],
+                                                              [
+                                                                  106.0133,
+                                                                  22.3133
+                                                              ],
+                                                              [
+                                                                  105.6533,
+                                                                  22.3133
+                                                              ],
+                                                              [
+                                                                  105.6533,
+                                                                  21.9533
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Bạc Liêu",
+                                            "NAME_1":  "Bạc Liêu",
+                                            "province":  "Bạc Liêu",
+                                            "ten_tinh":  "Bạc Liêu",
+                                            "region":  "Đồng Bằng Sông Cửu Long",
+                                            "terrain":  "ven biển",
+                                            "centroid_lat":  9.285,
+                                            "centroid_lon":  105.7244
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  105.5444,
+                                                                  9.105
+                                                              ],
+                                                              [
+                                                                  105.9044,
+                                                                  9.105
+                                                              ],
+                                                              [
+                                                                  105.9044,
+                                                                  9.465
+                                                              ],
+                                                              [
+                                                                  105.5444,
+                                                                  9.465
+                                                              ],
+                                                              [
+                                                                  105.5444,
+                                                                  9.105
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Bắc Ninh",
+                                            "NAME_1":  "Bắc Ninh",
+                                            "province":  "Bắc Ninh",
+                                            "ten_tinh":  "Bắc Ninh",
+                                            "region":  "Đồng Bằng Sông Hồng",
+                                            "terrain":  "đồng bằng",
+                                            "centroid_lat":  21.1833,
+                                            "centroid_lon":  106.05
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  105.87,
+                                                                  21.0033
+                                                              ],
+                                                              [
+                                                                  106.23,
+                                                                  21.0033
+                                                              ],
+                                                              [
+                                                                  106.23,
+                                                                  21.3633
+                                                              ],
+                                                              [
+                                                                  105.87,
+                                                                  21.3633
+                                                              ],
+                                                              [
+                                                                  105.87,
+                                                                  21.0033
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Bến Tre",
+                                            "NAME_1":  "Bến Tre",
+                                            "province":  "Bến Tre",
+                                            "ten_tinh":  "Bến Tre",
+                                            "region":  "Đồng Bằng Sông Cửu Long",
+                                            "terrain":  "ven biển",
+                                            "centroid_lat":  10.2333,
+                                            "centroid_lon":  106.3833
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  106.2033,
+                                                                  10.0533
+                                                              ],
+                                                              [
+                                                                  106.5633,
+                                                                  10.0533
+                                                              ],
+                                                              [
+                                                                  106.5633,
+                                                                  10.4133
+                                                              ],
+                                                              [
+                                                                  106.2033,
+                                                                  10.4133
+                                                              ],
+                                                              [
+                                                                  106.2033,
+                                                                  10.0533
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Bình Định",
+                                            "NAME_1":  "Bình Định",
+                                            "province":  "Bình Định",
+                                            "ten_tinh":  "Bình Định",
+                                            "region":  "Bắc Trung Bộ và Duyên hải miền Trung",
+                                            "terrain":  "ven biển",
+                                            "centroid_lat":  13.7667,
+                                            "centroid_lon":  109.2333
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  109.0533,
+                                                                  13.5867
+                                                              ],
+                                                              [
+                                                                  109.4133,
+                                                                  13.5867
+                                                              ],
+                                                              [
+                                                                  109.4133,
+                                                                  13.9467
+                                                              ],
+                                                              [
+                                                                  109.0533,
+                                                                  13.9467
+                                                              ],
+                                                              [
+                                                                  109.0533,
+                                                                  13.5867
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Bình Dương",
+                                            "NAME_1":  "Bình Dương",
+                                            "province":  "Bình Dương",
+                                            "ten_tinh":  "Bình Dương",
+                                            "region":  "Đông Nam Bộ",
+                                            "terrain":  "đồng bằng",
+                                            "centroid_lat":  11.2667,
+                                            "centroid_lon":  106.6
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  106.42,
+                                                                  11.0867
+                                                              ],
+                                                              [
+                                                                  106.78,
+                                                                  11.0867
+                                                              ],
+                                                              [
+                                                                  106.78,
+                                                                  11.4467
+                                                              ],
+                                                              [
+                                                                  106.42,
+                                                                  11.4467
+                                                              ],
+                                                              [
+                                                                  106.42,
+                                                                  11.0867
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Bình Phước",
+                                            "NAME_1":  "Bình Phước",
+                                            "province":  "Bình Phước",
+                                            "ten_tinh":  "Bình Phước",
+                                            "region":  "Đông Nam Bộ",
+                                            "terrain":  "miền núi",
+                                            "centroid_lat":  11.5333,
+                                            "centroid_lon":  106.9167
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  106.7367,
+                                                                  11.3533
+                                                              ],
+                                                              [
+                                                                  107.0967,
+                                                                  11.3533
+                                                              ],
+                                                              [
+                                                                  107.0967,
+                                                                  11.7133
+                                                              ],
+                                                              [
+                                                                  106.7367,
+                                                                  11.7133
+                                                              ],
+                                                              [
+                                                                  106.7367,
+                                                                  11.3533
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Bình Thuận",
+                                            "NAME_1":  "Bình Thuận",
+                                            "province":  "Bình Thuận",
+                                            "ten_tinh":  "Bình Thuận",
+                                            "region":  "Bắc Trung Bộ và Duyên hải miền Trung",
+                                            "terrain":  "ven biển",
+                                            "centroid_lat":  10.9333,
+                                            "centroid_lon":  108.1
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  107.92,
+                                                                  10.7533
+                                                              ],
+                                                              [
+                                                                  108.28,
+                                                                  10.7533
+                                                              ],
+                                                              [
+                                                                  108.28,
+                                                                  11.1133
+                                                              ],
+                                                              [
+                                                                  107.92,
+                                                                  11.1133
+                                                              ],
+                                                              [
+                                                                  107.92,
+                                                                  10.7533
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Cà Mau",
+                                            "NAME_1":  "Cà Mau",
+                                            "province":  "Cà Mau",
+                                            "ten_tinh":  "Cà Mau",
+                                            "region":  "Đồng Bằng Sông Cửu Long",
+                                            "terrain":  "ven biển",
+                                            "centroid_lat":  9.1769,
+                                            "centroid_lon":  105.15
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  104.97,
+                                                                  8.9969
+                                                              ],
+                                                              [
+                                                                  105.33,
+                                                                  8.9969
+                                                              ],
+                                                              [
+                                                                  105.33,
+                                                                  9.3569
+                                                              ],
+                                                              [
+                                                                  104.97,
+                                                                  9.3569
+                                                              ],
+                                                              [
+                                                                  104.97,
+                                                                  8.9969
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Cần Thơ",
+                                            "NAME_1":  "Cần Thơ",
+                                            "province":  "Cần Thơ",
+                                            "ten_tinh":  "Cần Thơ",
+                                            "region":  "Đồng Bằng Sông Cửu Long",
+                                            "terrain":  "đồng bằng",
+                                            "centroid_lat":  10.0333,
+                                            "centroid_lon":  105.7833
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  105.6033,
+                                                                  9.8533
+                                                              ],
+                                                              [
+                                                                  105.9633,
+                                                                  9.8533
+                                                              ],
+                                                              [
+                                                                  105.9633,
+                                                                  10.2133
+                                                              ],
+                                                              [
+                                                                  105.6033,
+                                                                  10.2133
+                                                              ],
+                                                              [
+                                                                  105.6033,
+                                                                  9.8533
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Cao Bằng",
+                                            "NAME_1":  "Cao Bằng",
+                                            "province":  "Cao Bằng",
+                                            "ten_tinh":  "Cao Bằng",
+                                            "region":  "Tr [*]ung du và miền núi Bắc Bộ",
+                                            "terrain":  "miền núi",
+                                            "centroid_lat":  22.6667,
+                                            "centroid_lon":  106.25
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  106.07,
+                                                                  22.4867
+                                                              ],
+                                                              [
+                                                                  106.43,
+                                                                  22.4867
+                                                              ],
+                                                              [
+                                                                  106.43,
+                                                                  22.8467
+                                                              ],
+                                                              [
+                                                                  106.07,
+                                                                  22.8467
+                                                              ],
+                                                              [
+                                                                  106.07,
+                                                                  22.4867
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Đà Nẵng",
+                                            "NAME_1":  "Đà Nẵng",
+                                            "province":  "Đà Nẵng",
+                                            "ten_tinh":  "Đà Nẵng",
+                                            "region":  "Bắc Trung Bộ và Duyên hải miền Trung",
+                                            "terrain":  "ven biển",
+                                            "centroid_lat":  16.0406,
+                                            "centroid_lon":  108.2125
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  108.0325,
+                                                                  15.8606
+                                                              ],
+                                                              [
+                                                                  108.3925,
+                                                                  15.8606
+                                                              ],
+                                                              [
+                                                                  108.3925,
+                                                                  16.2206
+                                                              ],
+                                                              [
+                                                                  108.0325,
+                                                                  16.2206
+                                                              ],
+                                                              [
+                                                                  108.0325,
+                                                                  15.8606
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Đắk Lắk",
+                                            "NAME_1":  "Đắk Lắk",
+                                            "province":  "Đắk Lắk",
+                                            "ten_tinh":  "Đắk Lắk",
+                                            "region":  "Tây Nguyên",
+                                            "terrain":  "miền núi",
+                                            "centroid_lat":  12.6667,
+                                            "centroid_lon":  108.05
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  107.87,
+                                                                  12.4867
+                                                              ],
+                                                              [
+                                                                  108.23,
+                                                                  12.4867
+                                                              ],
+                                                              [
+                                                                  108.23,
+                                                                  12.8467
+                                                              ],
+                                                              [
+                                                                  107.87,
+                                                                  12.8467
+                                                              ],
+                                                              [
+                                                                  107.87,
+                                                                  12.4867
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Đắk Nông",
+                                            "NAME_1":  "Đắk Nông",
+                                            "province":  "Đắk Nông",
+                                            "ten_tinh":  "Đắk Nông",
+                                            "region":  "Tây Nguyên",
+                                            "terrain":  "miền núi",
+                                            "centroid_lat":  12.3,
+                                            "centroid_lon":  107.5833
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  107.4033,
+                                                                  12.12
+                                                              ],
+                                                              [
+                                                                  107.7633,
+                                                                  12.12
+                                                              ],
+                                                              [
+                                                                  107.7633,
+                                                                  12.48
+                                                              ],
+                                                              [
+                                                                  107.4033,
+                                                                  12.48
+                                                              ],
+                                                              [
+                                                                  107.4033,
+                                                                  12.12
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Điện Biên",
+                                            "NAME_1":  "Điện Biên",
+                                            "province":  "Điện Biên",
+                                            "ten_tinh":  "Điện Biên",
+                                            "region":  "Trung du và miền núi Bắc Bộ",
+                                            "terrain":  "miền núi",
+                                            "centroid_lat":  21.3833,
+                                            "centroid_lon":  103.0167
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  102.8367,
+                                                                  21.2033
+                                                              ],
+                                                              [
+                                                                  103.1967,
+                                                                  21.2033
+                                                              ],
+                                                              [
+                                                                  103.1967,
+                                                                  21.5633
+                                                              ],
+                                                              [
+                                                                  102.8367,
+                                                                  21.5633
+                                                              ],
+                                                              [
+                                                                  102.8367,
+                                                                  21.2033
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Đồng Nai",
+                                            "NAME_1":  "Đồng Nai",
+                                            "province":  "Đồng Nai",
+                                            "ten_tinh":  "Đồng Nai",
+                                            "region":  "Đông Nam Bộ",
+                                            "terrain":  "đồng bằng",
+                                            "centroid_lat":  10.95,
+                                            "centroid_lon":  106.8167
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  106.6367,
+                                                                  10.77
+                                                              ],
+                                                              [
+                                                                  106.9967,
+                                                                  10.77
+                                                              ],
+                                                              [
+                                                                  106.9967,
+                                                                  11.13
+                                                              ],
+                                                              [
+                                                                  106.6367,
+                                                                  11.13
+                                                              ],
+                                                              [
+                                                                  106.6367,
+                                                                  10.77
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Đồng Tháp",
+                                            "NAME_1":  "Đồng Tháp",
+                                            "province":  "Đồng Tháp",
+                                            "ten_tinh":  "Đồng Tháp",
+                                            "region":  "Đồng Bằng Sông Cửu Long",
+                                            "terrain":  "đồng bằng",
+                                            "centroid_lat":  10.6667,
+                                            "centroid_lon":  105.7333
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  105.5533,
+                                                                  10.4867
+                                                              ],
+                                                              [
+                                                                  105.9133,
+                                                                  10.4867
+                                                              ],
+                                                              [
+                                                                  105.9133,
+                                                                  10.8467
+                                                              ],
+                                                              [
+                                                                  105.5533,
+                                                                  10.8467
+                                                              ],
+                                                              [
+                                                                  105.5533,
+                                                                  10.4867
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Gia Lai",
+                                            "NAME_1":  "Gia Lai",
+                                            "province":  "Gia Lai",
+                                            "ten_tinh":  "Gia Lai",
+                                            "region":  "Tây Nguyên",
+                                            "terrain":  "miền núi",
+                                            "centroid_lat":  13.9833,
+                                            "centroid_lon":  108
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  107.82,
+                                                                  13.8033
+                                                              ],
+                                                              [
+                                                                  108.18,
+                                                                  13.8033
+                                                              ],
+                                                              [
+                                                                  108.18,
+                                                                  14.1633
+                                                              ],
+                                                              [
+                                                                  107.82,
+                                                                  14.1633
+                                                              ],
+                                                              [
+                                                                  107.82,
+                                                                  13.8033
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Hà Giang",
+                                            "NAME_1":  "Hà Giang",
+                                            "province":  "Hà Giang",
+                                            "ten_tinh":  "Hà Giang",
+                                            "region":  "Trung du và miền núi Bắc Bộ",
+                                            "terrain":  "miền núi",
+                                            "centroid_lat":  22.8333,
+                                            "centroid_lon":  104.9833
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  104.8033,
+                                                                  22.6533
+                                                              ],
+                                                              [
+                                                                  105.1633,
+                                                                  22.6533
+                                                              ],
+                                                              [
+                                                                  105.1633,
+                                                                  23.0133
+                                                              ],
+                                                              [
+                                                                  104.8033,
+                                                                  23.0133
+                                                              ],
+                                                              [
+                                                                  104.8033,
+                                                                  22.6533
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Hà Nam",
+                                            "NAME_1":  "Hà Nam",
+                                            "province":  "Hà Nam",
+                                            "ten_tinh":  "Hà Nam",
+                                            "region":  "Đồng Bằng Sông Hồng",
+                                            "terrain":  "đồng bằng",
+                                            "centroid_lat":  20.5411,
+                                            "centroid_lon":  105.9139
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  105.7339,
+                                                                  20.3611
+                                                              ],
+                                                              [
+                                                                  106.0939,
+                                                                  20.3611
+                                                              ],
+                                                              [
+                                                                  106.0939,
+                                                                  20.7211
+                                                              ],
+                                                              [
+                                                                  105.7339,
+                                                                  20.7211
+                                                              ],
+                                                              [
+                                                                  105.7339,
+                                                                  20.3611
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Hà Nội",
+                                            "NAME_1":  "Hà Nội",
+                                            "province":  "Hà Nội",
+                                            "ten_tinh":  "Hà Nội",
+                                            "region":  "Đồng Bằng Sông Hồng",
+                                            "terrain":  "đồng bằng",
+                                            "centroid_lat":  21.0333,
+                                            "centroid_lon":  105.85
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  105.67,
+                                                                  20.8533
+                                                              ],
+                                                              [
+                                                                  106.03,
+                                                                  20.8533
+                                                              ],
+                                                              [
+                                                                  106.03,
+                                                                  21.2133
+                                                              ],
+                                                              [
+                                                                  105.67,
+                                                                  21.2133
+                                                              ],
+                                                              [
+                                                                  105.67,
+                                                                  20.8533
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Hà Tĩnh",
+                                            "NAME_1":  "Hà Tĩnh",
+                                            "province":  "Hà Tĩnh",
+                                            "ten_tinh":  "Hà Tĩnh",
+                                            "region":  "Bắc Trung Bộ và Duyên hải miền Trung",
+                                            "terrain":  "ven biển",
+                                            "centroid_lat":  18.3333,
+                                            "centroid_lon":  105.9
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  105.72,
+                                                                  18.1533
+                                                              ],
+                                                              [
+                                                                  106.08,
+                                                                  18.1533
+                                                              ],
+                                                              [
+                                                                  106.08,
+                                                                  18.5133
+                                                              ],
+                                                              [
+                                                                  105.72,
+                                                                  18.5133
+                                                              ],
+                                                              [
+                                                                  105.72,
+                                                                  18.1533
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Hải Dương",
+                                            "NAME_1":  "Hải Dương",
+                                            "province":  "Hải Dương",
+                                            "ten_tinh":  "Hải Dương",
+                                            "region":  "Đồng Bằng Sông Hồng",
+                                            "terrain":  "đồng bằng",
+                                            "centroid_lat":  20.9333,
+                                            "centroid_lon":  106.3167
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  106.1367,
+                                                                  20.7533
+                                                              ],
+                                                              [
+                                                                  106.4967,
+                                                                  20.7533
+                                                              ],
+                                                              [
+                                                                  106.4967,
+                                                                  21.1133
+                                                              ],
+                                                              [
+                                                                  106.1367,
+                                                                  21.1133
+                                                              ],
+                                                              [
+                                                                  106.1367,
+                                                                  20.7533
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Hải Phòng",
+                                            "NAME_1":  "Hải Phòng",
+                                            "province":  "Hải Phòng",
+                                            "ten_tinh":  "Hải Phòng",
+                                            "region":  "Đồng Bằng Sông Hồng",
+                                            "terrain":  "ven biển",
+                                            "centroid_lat":  20.8561,
+                                            "centroid_lon":  106.6822
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  106.5022,
+                                                                  20.6761
+                                                              ],
+                                                              [
+                                                                  106.8622,
+                                                                  20.6761
+                                                              ],
+                                                              [
+                                                                  106.8622,
+                                                                  21.0361
+                                                              ],
+                                                              [
+                                                                  106.5022,
+                                                                  21.0361
+                                                              ],
+                                                              [
+                                                                  106.5022,
+                                                                  20.6761
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Hậu Giang",
+                                            "NAME_1":  "Hậu Giang",
+                                            "province":  "Hậu Giang",
+                                            "ten_tinh":  "Hậu Giang",
+                                            "region":  "Đồng Bằng Sông Cửu Long",
+                                            "terrain":  "đồng bằng",
+                                            "centroid_lat":  9.8333,
+                                            "centroid_lon":  105.6333
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  105.4533,
+                                                                  9.6533
+                                                              ],
+                                                              [
+                                                                  105.8133,
+                                                                  9.6533
+                                                              ],
+                                                              [
+                                                                  105.8133,
+                                                                  10.0133
+                                                              ],
+                                                              [
+                                                                  105.4533,
+                                                                  10.0133
+                                                              ],
+                                                              [
+                                                                  105.4533,
+                                                                  9.6533
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "TP. Hồ Chí Minh",
+                                            "NAME_1":  "TP. Hồ Chí Minh",
+                                            "province":  "TP. Hồ Chí Minh",
+                                            "ten_tinh":  "TP. Hồ Chí Minh",
+                                            "region":  "Đông Nam Bộ",
+                                            "terrain":  "đồng bằng",
+                                            "centroid_lat":  10.75,
+                                            "centroid_lon":  106.6667
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  106.4867,
+                                                                  10.57
+                                                              ],
+                                                              [
+                                                                  106.8467,
+                                                                  10.57
+                                                              ],
+                                                              [
+                                                                  106.8467,
+                                                                  10.93
+                                                              ],
+                                                              [
+                                                                  106.4867,
+                                                                  10.93
+                                                              ],
+                                                              [
+                                                                  106.4867,
+                                                                  10.57
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Hòa Bình",
+                                            "NAME_1":  "Hòa Bình",
+                                            "province":  "Hòa Bình",
+                                            "ten_tinh":  "Hòa Bình",
+                                            "region":  "Trung du và miền núi Bắc Bộ",
+                                            "terrain":  "miền núi",
+                                            "centroid_lat":  20.8133,
+                                            "centroid_lon":  105.3383
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  105.1583,
+                                                                  20.6333
+                                                              ],
+                                                              [
+                                                                  105.5183,
+                                                                  20.6333
+                                                              ],
+                                                              [
+                                                                  105.5183,
+                                                                  20.9933
+                                                              ],
+                                                              [
+                                                                  105.1583,
+                                                                  20.9933
+                                                              ],
+                                                              [
+                                                                  105.1583,
+                                                                  20.6333
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Hưng Yên",
+                                            "NAME_1":  "Hưng Yên",
+                                            "province":  "Hưng Yên",
+                                            "ten_tinh":  "Hưng Yên",
+                                            "region":  "Đồng Bằng Sông Hồng",
+                                            "terrain":  "đồng bằng",
+                                            "centroid_lat":  20.65,
+                                            "centroid_lon":  106.0667
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  105.8867,
+                                                                  20.47
+                                                              ],
+                                                              [
+                                                                  106.2467,
+                                                                  20.47
+                                                              ],
+                                                              [
+                                                                  106.2467,
+                                                                  20.83
+                                                              ],
+                                                              [
+                                                                  105.8867,
+                                                                  20.83
+                                                              ],
+                                                              [
+                                                                  105.8867,
+                                                                  20.47
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Khánh Hòa",
+                                            "NAME_1":  "Khánh Hòa",
+                                            "province":  "Khánh Hòa",
+                                            "ten_tinh":  "Khánh Hòa",
+                                            "region":  "Bắc Trung Bộ và Duyên hải miền Trung",
+                                            "terrain":  "ven biển",
+                                            "centroid_lat":  12.4833,
+                                            "centroid_lon":  109.1167
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  108.9367,
+                                                                  12.3033
+                                                              ],
+                                                              [
+                                                                  109.2967,
+                                                                  12.3033
+                                                              ],
+                                                              [
+                                                                  109.2967,
+                                                                  12.6633
+                                                              ],
+                                                              [
+                                                                  108.9367,
+                                                                  12.6633
+                                                              ],
+                                                              [
+                                                                  108.9367,
+                                                                  12.3033
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Kiên Giang",
+                                            "NAME_1":  "Kiên Giang",
+                                            "province":  "Kiên Giang",
+                                            "ten_tinh":  "Kiên Giang",
+                                            "region":  "Đồng Bằng Sông Cửu Long",
+                                            "terrain":  "ven biển",
+                                            "centroid_lat":  10.0167,
+                                            "centroid_lon":  105.0833
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  104.9033,
+                                                                  9.8367
+                                                              ],
+                                                              [
+                                                                  105.2633,
+                                                                  9.8367
+                                                              ],
+                                                              [
+                                                                  105.2633,
+                                                                  10.1967
+                                                              ],
+                                                              [
+                                                                  104.9033,
+                                                                  10.1967
+                                                              ],
+                                                              [
+                                                                  104.9033,
+                                                                  9.8367
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Kon Tum",
+                                            "NAME_1":  "Kon Tum",
+                                            "province":  "Kon Tum",
+                                            "ten_tinh":  "Kon Tum",
+                                            "region":  "Tây Nguyên",
+                                            "terrain":  "miền núi",
+                                            "centroid_lat":  14.35,
+                                            "centroid_lon":  108
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  107.82,
+                                                                  14.17
+                                                              ],
+                                                              [
+                                                                  108.18,
+                                                                  14.17
+                                                              ],
+                                                              [
+                                                                  108.18,
+                                                                  14.53
+                                                              ],
+                                                              [
+                                                                  107.82,
+                                                                  14.53
+                                                              ],
+                                                              [
+                                                                  107.82,
+                                                                  14.17
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Lai Châu",
+                                            "NAME_1":  "Lai Châu",
+                                            "province":  "Lai Châu",
+                                            "ten_tinh":  "Lai Châu",
+                                            "region":  "Trung du và miền núi Bắc Bộ",
+                                            "terrain":  "miền núi",
+                                            "centroid_lat":  22.3833,
+                                            "centroid_lon":  102.95
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  102.77,
+                                                                  22.2033
+                                                              ],
+                                                              [
+                                                                  103.13,
+                                                                  22.2033
+                                                              ],
+                                                              [
+                                                                  103.13,
+                                                                  22.5633
+                                                              ],
+                                                              [
+                                                                  102.77,
+                                                                  22.5633
+                                                              ],
+                                                              [
+                                                                  102.77,
+                                                                  22.2033
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Lâm Đồng",
+                                            "NAME_1":  "Lâm Đồng",
+                                            "province":  "Lâm Đồng",
+                                            "ten_tinh":  "Lâm Đồng",
+                                            "region":  "Tây Nguyên",
+                                            "terrain":  "miền núi",
+                                            "centroid_lat":  11.9333,
+                                            "centroid_lon":  108.4167
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  108.2367,
+                                                                  11.7533
+                                                              ],
+                                                              [
+                                                                  108.5967,
+                                                                  11.7533
+                                                              ],
+                                                              [
+                                                                  108.5967,
+                                                                  12.1133
+                                                              ],
+                                                              [
+                                                                  108.2367,
+                                                                  12.1133
+                                                              ],
+                                                              [
+                                                                  108.2367,
+                                                                  11.7533
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Lạng Sơn",
+                                            "NAME_1":  "Lạng Sơn",
+                                            "province":  "Lạng Sơn",
+                                            "ten_tinh":  "Lạng Sơn",
+                                            "region":  "Trung du và miền núi Bắc Bộ",
+                                            "terrain":  "miền núi",
+                                            "centroid_lat":  21.8333,
+                                            "centroid_lon":  106.7333
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  106.5533,
+                                                                  21.6533
+                                                              ],
+                                                              [
+                                                                  106.9133,
+                                                                  21.6533
+                                                              ],
+                                                              [
+                                                                  106.9133,
+                                                                  22.0133
+                                                              ],
+                                                              [
+                                                                  106.5533,
+                                                                  22.0133
+                                                              ],
+                                                              [
+                                                                  106.5533,
+                                                                  21.6533
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Lào Cai",
+                                            "NAME_1":  "Lào Cai",
+                                            "province":  "Lào Cai",
+                                            "ten_tinh":  "Lào Cai",
+                                            "region":  "Trung du và miền núi Bắc Bộ",
+                                            "terrain":  "miền núi",
+                                            "centroid_lat":  22.4833,
+                                            "centroid_lon":  103.95
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  103.77,
+                                                                  22.3033
+                                                              ],
+                                                              [
+                                                                  104.13,
+                                                                  22.3033
+                                                              ],
+                                                              [
+                                                                  104.13,
+                                                                  22.6633
+                                                              ],
+                                                              [
+                                                                  103.77,
+                                                                  22.6633
+                                                              ],
+                                                              [
+                                                                  103.77,
+                                                                  22.3033
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Long An",
+                                            "NAME_1":  "Long An",
+                                            "province":  "Long An",
+                                            "ten_tinh":  "Long An",
+                                            "region":  "Đồng Bằng Sông Cửu Long",
+                                            "terrain":  "đồng bằng",
+                                            "centroid_lat":  10.5333,
+                                            "centroid_lon":  106.4167
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  106.2367,
+                                                                  10.3533
+                                                              ],
+                                                              [
+                                                                  106.5967,
+                                                                  10.3533
+                                                              ],
+                                                              [
+                                                                  106.5967,
+                                                                  10.7133
+                                                              ],
+                                                              [
+                                                                  106.2367,
+                                                                  10.7133
+                                                              ],
+                                                              [
+                                                                  106.2367,
+                                                                  10.3533
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Nam Định",
+                                            "NAME_1":  "Nam Định",
+                                            "province":  "Nam Định",
+                                            "ten_tinh":  "Nam Định",
+                                            "region":  "Đồng Bằng Sông Hồng",
+                                            "terrain":  "ven biển",
+                                            "centroid_lat":  20.4167,
+                                            "centroid_lon":  106.1667
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  105.9867,
+                                                                  20.2367
+                                                              ],
+                                                              [
+                                                                  106.3467,
+                                                                  20.2367
+                                                              ],
+                                                              [
+                                                                  106.3467,
+                                                                  20.5967
+                                                              ],
+                                                              [
+                                                                  105.9867,
+                                                                  20.5967
+                                                              ],
+                                                              [
+                                                                  105.9867,
+                                                                  20.2367
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Nghệ An",
+                                            "NAME_1":  "Nghệ An",
+                                            "province":  "Nghệ An",
+                                            "ten_tinh":  "Nghệ An",
+                                            "region":  "Bắc Trung Bộ và Duyên hải miền Trung",
+                                            "terrain":  "ven biển",
+                                            "centroid_lat":  18.6667,
+                                            "centroid_lon":  105.6667
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  105.4867,
+                                                                  18.4867
+                                                              ],
+                                                              [
+                                                                  105.8467,
+                                                                  18.4867
+                                                              ],
+                                                              [
+                                                                  105.8467,
+                                                                  18.8467
+                                                              ],
+                                                              [
+                                                                  105.4867,
+                                                                  18.8467
+                                                              ],
+                                                              [
+                                                                  105.4867,
+                                                                  18.4867
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Ninh Bình",
+                                            "NAME_1":  "Ninh Bình",
+                                            "province":  "Ninh Bình",
+                                            "ten_tinh":  "Ninh Bình",
+                                            "region":  "Đồng Bằng Sông Hồng",
+                                            "terrain":  "đồng bằng",
+                                            "centroid_lat":  20.2539,
+                                            "centroid_lon":  105.975
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  105.795,
+                                                                  20.0739
+                                                              ],
+                                                              [
+                                                                  106.155,
+                                                                  20.0739
+                                                              ],
+                                                              [
+                                                                  106.155,
+                                                                  20.4339
+                                                              ],
+                                                              [
+                                                                  105.795,
+                                                                  20.4339
+                                                              ],
+                                                              [
+                                                                  105.795,
+                                                                  20.0739
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Ninh Thuận",
+                                            "NAME_1":  "Ninh Thuận",
+                                            "province":  "Ninh Thuận",
+                                            "ten_tinh":  "Ninh Thuận",
+                                            "region":  "Bắc Trung Bộ và Duyên hải miền Trung",
+                                            "terrain":  "ven biển",
+                                            "centroid_lat":  11.8167,
+                                            "centroid_lon":  108.8833
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  108.7033,
+                                                                  11.6367
+                                                              ],
+                                                              [
+                                                                  109.0633,
+                                                                  11.6367
+                                                              ],
+                                                              [
+                                                                  109.0633,
+                                                                  11.9967
+                                                              ],
+                                                              [
+                                                                  108.7033,
+                                                                  11.9967
+                                                              ],
+                                                              [
+                                                                  108.7033,
+                                                                  11.6367
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Phú Thọ",
+                                            "NAME_1":  "Phú Thọ",
+                                            "province":  "Phú Thọ",
+                                            "ten_tinh":  "Phú Thọ",
+                                            "region":  "Đồng Bằng Sông Hồng",
+                                            "terrain":  "miền núi",
+                                            "centroid_lat":  21.3019,
+                                            "centroid_lon":  105.4308
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  105.2508,
+                                                                  21.1219
+                                                              ],
+                                                              [
+                                                                  105.6108,
+                                                                  21.1219
+                                                              ],
+                                                              [
+                                                                  105.6108,
+                                                                  21.4819
+                                                              ],
+                                                              [
+                                                                  105.2508,
+                                                                  21.4819
+                                                              ],
+                                                              [
+                                                                  105.2508,
+                                                                  21.1219
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Phú Yên",
+                                            "NAME_1":  "Phú Yên",
+                                            "province":  "Phú Yên",
+                                            "ten_tinh":  "Phú Yên",
+                                            "region":  "Bắc Trung Bộ và Duyên hải miền Trung",
+                                            "terrain":  "ven biển",
+                                            "centroid_lat":  13.35,
+                                            "centroid_lon":  109.0333
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  108.8533,
+                                                                  13.17
+                                                              ],
+                                                              [
+                                                                  109.2133,
+                                                                  13.17
+                                                              ],
+                                                              [
+                                                                  109.2133,
+                                                                  13.53
+                                                              ],
+                                                              [
+                                                                  108.8533,
+                                                                  13.53
+                                                              ],
+                                                              [
+                                                                  108.8533,
+                                                                  13.17
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Quảng Bình",
+                                            "NAME_1":  "Quảng Bình",
+                                            "province":  "Quảng Bình",
+                                            "ten_tinh":  "Quảng Bình",
+                                            "region":  "Bắc Trung Bộ và Duyên hải miền Trung",
+                                            "terrain":  "ven biển",
+                                            "centroid_lat":  17.5,
+                                            "centroid_lon":  106.6333
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  106.4533,
+                                                                  17.32
+                                                              ],
+                                                              [
+                                                                  106.8133,
+                                                                  17.32
+                                                              ],
+                                                              [
+                                                                  106.8133,
+                                                                  17.68
+                                                              ],
+                                                              [
+                                                                  106.4533,
+                                                                  17.68
+                                                              ],
+                                                              [
+                                                                  106.4533,
+                                                                  17.32
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Quảng Nam",
+                                            "NAME_1":  "Quảng Nam",
+                                            "province":  "Quảng Nam",
+                                            "ten_tinh":  "Quảng Nam",
+                                            "region":  "Bắc Trung Bộ và Duyên hải miền Trung",
+                                            "terrain":  "ven biển",
+                                            "centroid_lat":  15.8794,
+                                            "centroid_lon":  108.335
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  108.155,
+                                                                  15.6994
+                                                              ],
+                                                              [
+                                                                  108.515,
+                                                                  15.6994
+                                                              ],
+                                                              [
+                                                                  108.515,
+                                                                  16.0594
+                                                              ],
+                                                              [
+                                                                  108.155,
+                                                                  16.0594
+                                                              ],
+                                                              [
+                                                                  108.155,
+                                                                  15.6994
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Quảng Ngãi",
+                                            "NAME_1":  "Quảng Ngãi",
+                                            "province":  "Quảng Ngãi",
+                                            "ten_tinh":  "Quảng Ngãi",
+                                            "region":  "Bắc Trung Bộ và Duyên hải miền Trung",
+                                            "terrain":  "ven biển",
+                                            "centroid_lat":  15.1167,
+                                            "centroid_lon":  108.8
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  108.62,
+                                                                  14.9367
+                                                              ],
+                                                              [
+                                                                  108.98,
+                                                                  14.9367
+                                                              ],
+                                                              [
+                                                                  108.98,
+                                                                  15.2967
+                                                              ],
+                                                              [
+                                                                  108.62,
+                                                                  15.2967
+                                                              ],
+                                                              [
+                                                                  108.62,
+                                                                  14.9367
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Quảng Ninh",
+                                            "NAME_1":  "Quảng Ninh",
+                                            "province":  "Quảng Ninh",
+                                            "ten_tinh":  "Quảng Ninh",
+                                            "region":  "Trung du và miền núi Bắc Bộ",
+                                            "terrain":  "ven biển",
+                                            "centroid_lat":  21.0167,
+                                            "centroid_lon":  107.3167
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  107.1367,
+                                                                  20.8367
+                                                              ],
+                                                              [
+                                                                  107.4967,
+                                                                  20.8367
+                                                              ],
+                                                              [
+                                                                  107.4967,
+                                                                  21.1967
+                                                              ],
+                                                              [
+                                                                  107.1367,
+                                                                  21.1967
+                                                              ],
+                                                              [
+                                                                  107.1367,
+                                                                  20.8367
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Quảng Trị",
+                                            "NAME_1":  "Quảng Trị",
+                                            "province":  "Quảng Trị",
+                                            "ten_tinh":  "Quảng Trị",
+                                            "region":  "Bắc Trung Bộ và Duyên hải miền Trung",
+                                            "terrain":  "ven biển",
+                                            "centroid_lat":  16.7,
+                                            "centroid_lon":  107.1667
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  106.9867,
+                                                                  16.52
+                                                              ],
+                                                              [
+                                                                  107.3467,
+                                                                  16.52
+                                                              ],
+                                                              [
+                                                                  107.3467,
+                                                                  16.88
+                                                              ],
+                                                              [
+                                                                  106.9867,
+                                                                  16.88
+                                                              ],
+                                                              [
+                                                                  106.9867,
+                                                                  16.52
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Sóc Trăng",
+                                            "NAME_1":  "Sóc Trăng",
+                                            "province":  "Sóc Trăng",
+                                            "ten_tinh":  "Sóc Trăng",
+                                            "region":  "Đồng Bằng Sông Cửu Long",
+                                            "terrain":  "ven biển",
+                                            "centroid_lat":  9.6033,
+                                            "centroid_lon":  105.98
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  105.8,
+                                                                  9.4233
+                                                              ],
+                                                              [
+                                                                  106.16,
+                                                                  9.4233
+                                                              ],
+                                                              [
+                                                                  106.16,
+                                                                  9.7833
+                                                              ],
+                                                              [
+                                                                  105.8,
+                                                                  9.7833
+                                                              ],
+                                                              [
+                                                                  105.8,
+                                                                  9.4233
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Sơn La",
+                                            "NAME_1":  "Sơn La",
+                                            "province":  "Sơn La",
+                                            "ten_tinh":  "Sơn La",
+                                            "region":  "Trung du và miền núi Bắc Bộ",
+                                            "terrain":  "miền núi",
+                                            "centroid_lat":  21.3167,
+                                            "centroid_lon":  103.9
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  103.72,
+                                                                  21.1367
+                                                              ],
+                                                              [
+                                                                  104.08,
+                                                                  21.1367
+                                                              ],
+                                                              [
+                                                                  104.08,
+                                                                  21.4967
+                                                              ],
+                                                              [
+                                                                  103.72,
+                                                                  21.4967
+                                                              ],
+                                                              [
+                                                                  103.72,
+                                                                  21.1367
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Tây Ninh",
+                                            "NAME_1":  "Tây Ninh",
+                                            "province":  "Tây Ninh",
+                                            "ten_tinh":  "Tây Ninh",
+                                            "region":  "Đông Nam Bộ",
+                                            "terrain":  "đồng bằng",
+                                            "centroid_lat":  11.3,
+                                            "centroid_lon":  106.1
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  105.92,
+                                                                  11.12
+                                                              ],
+                                                              [
+                                                                  106.28,
+                                                                  11.12
+                                                              ],
+                                                              [
+                                                                  106.28,
+                                                                  11.48
+                                                              ],
+                                                              [
+                                                                  105.92,
+                                                                  11.48
+                                                              ],
+                                                              [
+                                                                  105.92,
+                                                                  11.12
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Thái Bình",
+                                            "NAME_1":  "Thái Bình",
+                                            "province":  "Thái Bình",
+                                            "ten_tinh":  "Thái Bình",
+                                            "region":  "Đồng Bằng Sông Hồng",
+                                            "terrain":  "ven biển",
+                                            "centroid_lat":  20.45,
+                                            "centroid_lon":  106.3333
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  106.1533,
+                                                                  20.27
+                                                              ],
+                                                              [
+                                                                  106.5133,
+                                                                  20.27
+                                                              ],
+                                                              [
+                                                                  106.5133,
+                                                                  20.63
+                                                              ],
+                                                              [
+                                                                  106.1533,
+                                                                  20.63
+                                                              ],
+                                                              [
+                                                                  106.1533,
+                                                                  20.27
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Thái Nguyên",
+                                            "NAME_1":  "Thái Nguyên",
+                                            "province":  "Thái Nguyên",
+                                            "ten_tinh":  "Thái Nguyên",
+                                            "region":  "Trung du và miền núi Bắc Bộ",
+                                            "terrain":  "miền núi",
+                                            "centroid_lat":  21.5928,
+                                            "centroid_lon":  105.8442
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  105.6642,
+                                                                  21.4128
+                                                              ],
+                                                              [
+                                                                  106.0242,
+                                                                  21.4128
+                                                              ],
+                                                              [
+                                                                  106.0242,
+                                                                  21.7728
+                                                              ],
+                                                              [
+                                                                  105.6642,
+                                                                  21.7728
+                                                              ],
+                                                              [
+                                                                  105.6642,
+                                                                  21.4128
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Thanh Hóa",
+                                            "NAME_1":  "Thanh Hóa",
+                                            "province":  "Thanh Hóa",
+                                            "ten_tinh":  "Thanh Hóa",
+                                            "region":  "Bắc Trung Bộ và Duyên hải miền Trung",
+                                            "terrain":  "ven biển",
+                                            "centroid_lat":  19.8,
+                                            "centroid_lon":  105.7667
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  105.5867,
+                                                                  19.62
+                                                              ],
+                                                              [
+                                                                  105.9467,
+                                                                  19.62
+                                                              ],
+                                                              [
+                                                                  105.9467,
+                                                                  19.98
+                                                              ],
+                                                              [
+                                                                  105.5867,
+                                                                  19.98
+                                                              ],
+                                                              [
+                                                                  105.5867,
+                                                                  19.62
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Thừa Thiên - Huế",
+                                            "NAME_1":  "Thừa Thiên - Huế",
+                                            "province":  "Thừa Thiên - Huế",
+                                            "ten_tinh":  "Thừa Thiên - Huế",
+                                            "region":  "Bắc Trung Bộ và Duyên hải miền Trung",
+                                            "terrain":  "ven biển",
+                                            "centroid_lat":  16.4667,
+                                            "centroid_lon":  107.6
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  107.42,
+                                                                  16.2867
+                                                              ],
+                                                              [
+                                                                  107.78,
+                                                                  16.2867
+                                                              ],
+                                                              [
+                                                                  107.78,
+                                                                  16.6467
+                                                              ],
+                                                              [
+                                                                  107.42,
+                                                                  16.6467
+                                                              ],
+                                                              [
+                                                                  107.42,
+                                                                  16.2867
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Tiền Giang",
+                                            "NAME_1":  "Tiền Giang",
+                                            "province":  "Tiền Giang",
+                                            "ten_tinh":  "Tiền Giang",
+                                            "region":  "Đồng Bằng Sông Cửu Long",
+                                            "terrain":  "ven biển",
+                                            "centroid_lat":  10.35,
+                                            "centroid_lon":  106.35
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  106.17,
+                                                                  10.17
+                                                              ],
+                                                              [
+                                                                  106.53,
+                                                                  10.17
+                                                              ],
+                                                              [
+                                                                  106.53,
+                                                                  10.53
+                                                              ],
+                                                              [
+                                                                  106.17,
+                                                                  10.53
+                                                              ],
+                                                              [
+                                                                  106.17,
+                                                                  10.17
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Trà Vinh",
+                                            "NAME_1":  "Trà Vinh",
+                                            "province":  "Trà Vinh",
+                                            "ten_tinh":  "Trà Vinh",
+                                            "region":  "Đồng Bằng Sông Cửu Long",
+                                            "terrain":  "ven biển",
+                                            "centroid_lat":  9.9347,
+                                            "centroid_lon":  106.3453
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  106.1653,
+                                                                  9.7547
+                                                              ],
+                                                              [
+                                                                  106.5253,
+                                                                  9.7547
+                                                              ],
+                                                              [
+                                                                  106.5253,
+                                                                  10.1147
+                                                              ],
+                                                              [
+                                                                  106.1653,
+                                                                  10.1147
+                                                              ],
+                                                              [
+                                                                  106.1653,
+                                                                  9.7547
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Tuyên Quang",
+                                            "NAME_1":  "Tuyên Quang",
+                                            "province":  "Tuyên Quang",
+                                            "ten_tinh":  "Tuyên Quang",
+                                            "region":  "Trung du và miền núi Bắc Bộ",
+                                            "terrain":  "miền núi",
+                                            "centroid_lat":  21.8233,
+                                            "centroid_lon":  105.2181
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  105.0381,
+                                                                  21.6433
+                                                              ],
+                                                              [
+                                                                  105.3981,
+                                                                  21.6433
+                                                              ],
+                                                              [
+                                                                  105.3981,
+                                                                  22.0033
+                                                              ],
+                                                              [
+                                                                  105.0381,
+                                                                  22.0033
+                                                              ],
+                                                              [
+                                                                  105.0381,
+                                                                  21.6433
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Vĩnh Long",
+                                            "NAME_1":  "Vĩnh Long",
+                                            "province":  "Vĩnh Long",
+                                            "ten_tinh":  "Vĩnh Long",
+                                            "region":  "Đồng Bằng Sông Cửu Long",
+                                            "terrain":  "đồng bằng",
+                                            "centroid_lat":  10.25,
+                                            "centroid_lon":  105.9667
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  105.7867,
+                                                                  10.07
+                                                              ],
+                                                              [
+                                                                  106.1467,
+                                                                  10.07
+                                                              ],
+                                                              [
+                                                                  106.1467,
+                                                                  10.43
+                                                              ],
+                                                              [
+                                                                  105.7867,
+                                                                  10.43
+                                                              ],
+                                                              [
+                                                                  105.7867,
+                                                                  10.07
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Vĩnh Phúc",
+                                            "NAME_1":  "Vĩnh Phúc",
+                                            "province":  "Vĩnh Phúc",
+                                            "ten_tinh":  "Vĩnh Phúc",
+                                            "region":  "Đồng Bằng Sông Hồng",
+                                            "terrain":  "đồng bằng",
+                                            "centroid_lat":  21.31,
+                                            "centroid_lon":  105.5967
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  105.4167,
+                                                                  21.13
+                                                              ],
+                                                              [
+                                                                  105.7767,
+                                                                  21.13
+                                                              ],
+                                                              [
+                                                                  105.7767,
+                                                                  21.49
+                                                              ],
+                                                              [
+                                                                  105.4167,
+                                                                  21.49
+                                                              ],
+                                                              [
+                                                                  105.4167,
+                                                                  21.13
+                                                              ]
+                                                          ]
+                                      }
+                     },
+                     {
+                         "type":  "Feature",
+                         "properties":  {
+                                            "name":  "Yên Bái",
+                                            "NAME_1":  "Yên Bái",
+                                            "province":  "Yên Bái",
+                                            "ten_tinh":  "Yên Bái",
+                                            "region":  "Trung du và miền núi Bắc Bộ",
+                                            "terrain":  "miền núi",
+                                            "centroid_lat":  21.7,
+                                            "centroid_lon":  104.8667
+                                        },
+                         "geometry":  {
+                                          "type":  "Polygon",
+                                          "coordinates":  [
+                                                              [
+                                                                  104.6867,
+                                                                  21.52
+                                                              ],
+                                                              [
+                                                                  105.0467,
+                                                                  21.52
+                                                              ],
+                                                              [
+                                                                  105.0467,
+                                                                  21.88
+                                                              ],
+                                                              [
+                                                                  104.6867,
+                                                                  21.88
+                                                              ],
+                                                              [
+                                                                  104.6867,
+                                                                  21.52
+                                                              ]
+                                                          ]
+                                      }
+                     }
+                 ]
+}
