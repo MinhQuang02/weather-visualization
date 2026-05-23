@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Weather Dashboard</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --color-freq: #0f766e;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 30px;
+        }
+
+        .dashboard-header {
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+        }
+        .dashboard-header h1 { margin: 0 0 8px 0; font-size: 30px; color: #1e293b; }
+        .dashboard-header p { margin: 0; color: var(--text-muted); font-size: 15px; }
+
+        /* --- Thanh trạng thái bộ lọc --- */
+        .filter-status {
+            margin-top: 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            display: none; /* Ẩn mặc định */
+        }
+        .reset-btn {
+            background: #0284c7; color: white; border: none;
+            padding: 3px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;
+        }
+        .reset-btn:hover { background: #0369a1; }
+
+        /* --- Bố cục mạng lưới --- */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .card {
+            background: var(--card-bg); padding: 25px; border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color); display: flex; flex-direction: column;
+        }
+        .card.full-width { grid-column: 1 / -1; }
+        .card-header h2 { margin: 0 0 5px 0; font-size: 18px; color: #1e293b; }
+        .card-header p { margin: 0 0 15px 0; color: var(--text-muted); font-size: 13px; }
+
+        /* --- Controls điều hướng --- */
+        .controls { display: flex; gap: 8px; margin-bottom: 15px; }
+        .toggle-btn {
+            padding: 6px 14px; font-size: 13px; font-weight: 600; border-radius: 6px;
+            cursor: pointer; border: 1px solid var(--border-color); background: #fff; color: var(--text-muted);
+        }
+        .toggle-btn.active { background: #0f172a; color: #fff; border-color: #0f172a; }
+
+        /* --- CSS cho SVG vẽ bằng D3 --- */
+        svg { width: 100%; height: auto; overflow: visible; }
+        .axis text { font-size: 11px; fill: #475569; font-weight: 500; }
+        .axis path, .axis line { stroke: #cbd5e1; }
+        .y-axis path, .y-axis line { stroke: none; }
+        .grid line { stroke: #f1f5f9; }
+        .grid path { stroke: none; }
+
+        /* Hiệu ứng trỏ chuột tương tác */
+        .interactive-bar, .bubble { cursor: pointer; transition: opacity 0.2s ease, stroke-width 0.2s ease; }
+        .interactive-bar:hover, .bubble:hover { stroke: #0f172a; stroke-width: 1.5px; }
+
+        /* Tooltip */
+        .tooltip {
+            position: absolute; background: rgba(15, 23, 42, 0.95); color: #fff;
+            padding: 10px 14px; border-radius: 6px; font-size: 12px; pointer-events: none;
+            opacity: 0; z-index: 1000; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2); line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-header">
+        <h1>Vietnam Weather Interactive Dashboard</h1>
+        <p>Hệ thống phân tích tương tác nâng cao. Ấn vào các Vùng miền để lọc dữ liệu tần suất thời tiết.</p>
+        <div class="filter-status" id="filter-container">
+            <span>Bộ lọc đang chọn: <span id="filter-name">None</span></span>
+            <button class="reset-btn" id="btn-reset">Hủy lọc vùng</button>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="card">
+            <div class="card-header">
+                <h2>So Sánh Khí Hậu Giữa Các Vùng Miền</h2>
+                <p>Nhấp vào thanh kẹo để chọn vùng lọc dữ liệu.</p>
+            </div>
+            <div class="controls">
+                <button id="btn-temp" class="toggle-btn active">Nhiệt Độ</button>
+                <button id="btn-hum" class="toggle-btn">Độ Ẩm</button>
+            </div>
+            <div id="compare-chart"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2>Phân Tích Tương Quan & Quy Mô Vùng</h2>
+                <p>Nhấp vào hình tròn đại diện của vùng để tiến hành lọc dữ liệu.</p>
+            </div>
+            <div id="bubble-chart" style="margin-top: 40px;"></div>
+        </div>
+
+        <div class="card full-width">
+            <div class="card-header">
+                <h2>Tần Suất Trạng Thái Thời Tiết <span id="freq-title-suffix" style="color:#0284c7;">(Toàn Quốc)</span></h2>
+                <p>Tự động cập nhật linh hoạt cấu trúc cột dựa trên bộ lọc vùng miền phía trên.</p>
+            </div>
+            <div id="frequency-chart"></div>
+        </div>
+    </div>
+
+    <div class="tooltip" id="db-tooltip"></div>
+
+    <script>
+        // --- CẤU HÌNH THAM SỐ TOÀN CỤC ---
+        const tooltip = d3.select("#db-tooltip");
+        
+        let masterDataset = [];     // Chứa dữ liệu gốc sạch
+        let selectedRegion = null;  // Trạng thái vùng đang lọc
+        let currentMetric = 'temp'; // Chỉ số đang chọn ('temp' hoặc 'hum')
+
+        // Thang màu cố định cho các vùng miền để đồng bộ trực quan giữa các biểu đồ
+        const colorScale = d3.scaleOrdinal()
+            .range(["#f43f5e", "#10b981", "#84cc16", "#ec4899", "#eab308", "#6366f1"]);
+
+        // --- ĐỌC VÀ TIỀN XỬ LÝ DỮ LIỆU ---
+        d3.csv("clean_weather_dataset.csv").then(rawData => {
+            const uniqueProvinces = new Map();
+            rawData.forEach(d => {
+                const prov = d["location.name"];
+                if (prov && !uniqueProvinces.has(prov)) {
+                    uniqueProvinces.set(prov, {
+                        province: prov,
+                        region: d["location.region"],
+                        temp: parseFloat(d["day.avgtemp_c"]),
+                        hum: parseFloat(d["day.avghumidity"]),
+                        condition: d["day.condition.text"]
+                    });
+                }
+            });
+            masterDataset = Array.from(uniqueProvinces.values());
+
+            // Gán danh sách tên vùng vào thang màu
+            const allRegions = Array.from(new Set(masterDataset.map(d => d.region)));
+            colorScale.domain(allRegions);
+
+            // Khởi chạy Dashboard
+            renderDashboard();
+
+        }).catch(err => console.error("Lỗi đọc dữ liệu:", err));
+
+
+        // --- HÀM ĐIỀU PHỐI CHÍNH ---
+        function renderDashboard() {
+            // Tính toán cụm vùng tĩnh (không bị ảnh hưởng lọc)
+            const regionalData = Array.from(d3.rollups(masterDataset,
+                v => ({
+                    count: v.length,
+                    temp: d3.mean(v, d => d.temp),
+                    hum: d3.mean(v, d => d.hum)
+                }),
+                d => d.region
+            ), ([region, values]) => ({ region, ...values }));
+
+            // Khởi tạo đồ thị tĩnh ở hàng trên
+            initCompareChart(regionalData);
+            initBubbleChart(regionalData);
+            
+            // Cập nhật biểu đồ tần suất (đồ thị động phụ thuộc trạng thái)
+            updateFrequencyChart();
+        }
+
+
+        // ========================================================
+        // BIỂU ĐỒ 1: COMPARE CHART (KHỞI TẠO TĨNH, CẬP NHẬT TRẠNG THÁI)
+        // ========================================================
+        let refreshCompareBars;
+        function initCompareChart(data) {
+            const margin = { top: 10, right: 50, bottom: 40, left: 160 },
+                  width = 600, height = 300,
+                  innerWidth = width - margin.left - margin.right,
+                  innerHeight = height - margin.top - margin.bottom;
+
+            const svg = d3.select("#compare-chart").append("svg")
+                .attr("viewBox", `0 0 ${width} ${height}`)
+                .append("g").attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+            const gridGroup = svg.append("g").attr("class", "grid").attr("transform", `translate(0, ${innerHeight})`);
+            const xAxisGroup = svg.append("g").attr("class", "axis x-axis").attr("transform", `translate(0, ${innerHeight})`);
+            const yAxisGroup = svg.append("g").attr("class", "axis y-axis");
+            const xLabel = svg.append("text").attr("x", innerWidth/2).attr("y", innerHeight + 35).style("text-anchor", "middle").style("font-size", "11px").style("fill", "#64748b");
+
+            refreshCompareBars = function() {
+                const t = d3.transition().duration(600);
+                data.sort((a, b) => b[currentMetric] - a[currentMetric]);
+
+                const xScale = d3.scaleLinear().domain([0, d3.max(data, d => d[currentMetric]) * 1.15]).range([0, innerWidth]);
+                const yScale = d3.scaleBand().domain(data.map(d => d.region)).range([0, innerHeight]).padding(0.25);
+
+                gridGroup.transition(t).call(d3.axisBottom(xScale).tickSize(-innerHeight).tickFormat("").ticks(5));
+                xAxisGroup.transition(t).call(d3.axisBottom(xScale).ticks(5));
+                yAxisGroup.transition(t).call(d3.axisLeft(yScale));
+                xLabel.text(currentMetric === 'temp' ? "Nhiệt độ trung bình (°C)" : "Độ ẩm trung bình (%)");
+
+                const unit = currentMetric === 'temp' ? "°C" : "%";
+
+                // Gắn dữ liệu thanh kẹo
+                svg.selectAll(".comp-bar").data(data, d => d.region).join(
+                    enter => enter.append("rect").attr("class", "comp-bar interactive-bar")
+                        .attr("y", d => yScale(d.region)).attr("x", 0).attr("height", yScale.bandwidth())
+                        .attr("fill", d => colorScale(d.region))
+                        .on("click", (event, d) => toggleRegionFilter(d.region))
+                        .on("mouseover", (e, d) => showTooltip(e, `<b>${d.region}</b><br/>Nhiệt độ: ${d.temp.toFixed(1)}°C<br/>Độ ẩm: ${d.hum.toFixed(1)}%`))
+                        .on("mousemove", moveTooltip)
+                        .on("mouseout", hideTooltip)
+                        .call(enter => enter.transition(t).attr("width", d => xScale(d[currentMetric]))),
+                    update => update.call(update => update.transition(t)
+                        .attr("y", d => yScale(d.region)).attr("width", d => xScale(d[currentMetric]).toFixed(0)).attr("height", yScale.bandwidth())),
+                    exit => exit.remove()
+                )
+                // Điều khiển hiệu ứng Opacity khi có bộ lọc hoạt động
+                .style("opacity", d => (selectedRegion === null || selectedRegion === d.region) ? 1 : 0.15);
+
+                // Số liệu cuối cột
+                svg.selectAll(".comp-label").data(data, d => d.region).join(
+                    enter => enter.append("text").attr("class", "comp-label")
+                        .attr("y", d => yScale(d.region) + yScale.bandwidth()/2).attr("dy", "0.35em")
+                        .style("font-size", "11px").style("font-weight", "600").style("fill", "#334155")
+                        .text(d => d[currentMetric].toFixed(1) + unit)
+                        .call(enter => enter.transition(t).attr("x", d => xScale(d[currentMetric]) + 6)),
+                    update => update.call(update => update.transition(t)
+                        .attr("y", d => yScale(d.region) + yScale.bandwidth()/2).attr("x", d => xScale(d[currentMetric]) + 6).text(d => d[currentMetric].toFixed(1) + unit)),
+                    exit => exit.remove()
+                )
+                .style("opacity", d => (selectedRegion === null || selectedRegion === d.region) ? 1 : 0.15);
+            };
+
+            refreshCompareBars();
+        }
+
+        // Điều khiển nút đổi chỉ số đo lường
+        document.getElementById('btn-temp').addEventListener('click', function() {
+            if (currentMetric === 'temp') return;
+            this.classList.add('active'); document.getElementById('btn-hum').classList.remove('active');
+            currentMetric = 'temp'; refreshCompareBars();
+        });
+        document.getElementById('btn-hum').addEventListener('click', function() {
+            if (currentMetric === 'hum') return;
+            this.classList.add('active'); document.getElementById('btn-temp').classList.remove('active');
+            currentMetric = 'hum'; refreshCompareBars();
+        });
+
+
+        // ========================================================
+        // BIỂU ĐỒ 2: BUBBLE CHART (KHỞI TẠO TĨNH, ĐIỀU KHIỂN OPACITY CHÉO)
+        // ========================================================
+        let refreshBubbleOpacity;
+        function initBubbleChart(data) {
+            const margin = { top: 10, right: 30, bottom: 40, left: 50 },
+                  width = 600, height = 260,
+                  innerWidth = width - margin.left - margin.right,
+                  innerHeight = height - margin.top - margin.bottom;
+
+            const svg = d3.select("#bubble-chart").append("svg")
+                .attr("viewBox", `0 0 ${width} ${height}`)
+                .append("g").attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+            const xScale = d3.scaleLinear().domain([d3.min(data, d => d.temp) - 1, d3.max(data, d => d.temp) + 1.5]).range([0, innerWidth]);
+            const yScale = d3.scaleLinear().domain([d3.min(data, d => d.hum) - 3, d3.max(data, d => d.hum) + 3]).range([innerHeight, 0]);
+            const rScale = d3.scaleSqrt().domain([0, d3.max(data, d => d.count)]).range([10, 35]);
+
+            svg.append("g").attr("class", "grid").attr("transform", `translate(0, ${innerHeight})`).call(d3.axisBottom(xScale).tickSize(-innerHeight).tickFormat(""));
+            svg.append("g").attr("class", "grid").call(d3.axisLeft(yScale).tickSize(-innerWidth).tickFormat(""));
+            svg.append("g").attr("class", "axis").attr("transform", `translate(0, ${innerHeight})`).call(d3.axisBottom(xScale).ticks(5));
+            svg.append("g").attr("class", "axis").call(d3.axisLeft(yScale).ticks(5));
+
+            svg.append("text").attr("x", innerWidth/2).attr("y", innerHeight + 35).style("text-anchor", "middle").style("font-size", "11px").style("fill", "#64748b").text("Nhiệt độ trung bình (°C)");
+            svg.append("text").attr("transform", "rotate(-90)").attr("x", -innerHeight/2).attr("y", -35).style("text-anchor", "middle").style("font-size", "11px").style("fill", "#64748b").text("Độ ẩm trung bình (%)");
+
+            const bubbles = svg.selectAll(".bubble-node").data(data).enter().append("g").attr("class", "bubble-node");
+
+            bubbles.append("circle").attr("class", "bubble")
+                .attr("cx", d => xScale(d.temp)).attr("cy", d => yScale(d.hum))
+                .attr("fill", d => colorScale(d.region)).attr("stroke", "#fff")
+                .on("click", (event, d) => toggleRegionFilter(d.region))
+                .on("mouseover", (e, d) => showTooltip(e, `<b>${d.region}</b><br/>Số tỉnh: ${d.count}`))
+                .on("mousemove", moveTooltip)
+                .on("mouseout", hideTooltip)
+                .attr("r", 0).transition().duration(800).ease(d3.easeElasticOut).attr("r", d => rScale(d.count));
+
+            bubbles.append("text").attr("x", d => xScale(d.temp)).attr("y", d => yScale(d.hum))
+                .style("text-anchor", "middle").style("alignment-baseline", "middle").style("font-size", "9px")
+                .style("font-weight", "600").style("fill", "#1e293b").style("pointer-events", "none")
+                .text(d => d.region.split(" và ")[0]); // Rút ngắn nhãn chữ dài cho đẹp
+
+            refreshBubbleOpacity = function() {
+                svg.selectAll(".bubble").style("opacity", d => (selectedRegion === null || selectedRegion === d.region) ? 0.8 : 0.1);
+                svg.selectAll(".bubble-node text").style("opacity", d => (selectedRegion === null || selectedRegion === d.region) ? 1 : 0.1);
+            };
+            refreshBubbleOpacity();
+        }
+
+
+        // ========================================================
+        // BIỂU ĐỒ 3: FREQUENCY CHART (BIẾN ĐỔI LINH HOẠT THEO BỘ LỌC DỮ LIỆU)
+        // ========================================================
+        function updateFrequencyChart() {
+            // Bước 1: Lọc tập dữ liệu dựa trên vùng đang được chọn
+            const filteredData = selectedRegion 
+                ? masterDataset.filter(d => d.region === selectedRegion)
+                : masterDataset;
+
+            // Bước 2: Gom nhóm đếm tần suất mới
+            const counts = Array.from(d3.rollup(filteredData, 
+                v => v.length, 
+                d => d.condition
+            ), ([condition, count]) => ({ condition, count }))
+            .sort((a, b) => b.count - a.count);
+
+            // Bước 3: Thiết lập lại khung hình học
+            const margin = { top: 10, right: 40, bottom: 40, left: 180 },
+                  width = 1200, height = 320,
+                  innerWidth = width - margin.left - margin.right,
+                  innerHeight = height - margin.top - margin.bottom;
+
+            // Xóa SVG cũ nếu có hoặc khởi tạo lần đầu
+            let svg = d3.select("#frequency-chart").select("svg");
+            if (svg.empty()) {
+                svg = d3.select("#frequency-chart").append("svg").attr("viewBox", `0 0 ${width} ${height}`);
+                svg.append("g").attr("class", "grid-holder").attr("transform", `translate(${margin.left}, ${innerHeight + margin.top})`);
+                svg.append("g").attr("class", "x-axis-holder").attr("transform", `translate(${margin.left}, ${innerHeight + margin.top})`);
+                svg.append("g").attr("class", "y-axis-holder").attr("transform", `translate(${margin.left}, ${margin.top})`);
+                svg.append("g").attr("class", "bars-holder").attr("transform", `translate(${margin.left}, ${margin.top})`);
+                svg.append("text").attr("class", "x-title").attr("x", margin.left + innerWidth/2).attr("y", innerHeight + margin.top + 35)
+                    .style("text-anchor", "middle").style("font-size", "11px").style("fill", "#64748b").text("Số lượng tỉnh thành");
+            }
+
+            const t = d3.transition().duration(600).ease(d3.easeCubicOut);
+
+            // Thiết lập thang đo thích ứng cục bộ dữ liệu mới
+            const xScale = d3.scaleLinear().domain([0, d3.max(counts, d => d.count) || 1]).nice().range([0, innerWidth]);
+            const yScale = d3.scaleBand().domain(counts.map(d => d.condition)).range([0, innerHeight]).padding(0.25);
+
+            // Chạy hiệu ứng cập nhật lưới và hệ trục
+            svg.select(".grid-holder").transition(t).call(d3.axisBottom(xScale).tickSize(-innerHeight).tickFormat("").ticks(6));
+            svg.select(".x-axis-holder").transition(t).call(d3.axisBottom(xScale).ticks(6));
+            svg.select(".y-axis-holder").transition(t).call(d3.axisLeft(yScale));
+
+            // THỰC HIỆN DATA JOIN CHO CÁC CỘT (RECT)
+            svg.select(".bars-holder").selectAll(".freq-bar")
+                .data(counts, d => d.condition) // Định danh theo Key
+                .join(
+                    enter => enter.append("rect").attr("class", "freq-bar interactive-bar")
+                        .attr("y", d => yScale(d.condition)).attr("x", 0).attr("height", yScale.bandwidth())
+                        .attr("fill", "var(--color-freq)").attr("rx", 3)
+                        .on("mouseover", (e, d) => showTooltip(e, `☁️ <b>${d.condition}</b><br/>Tần suất: ${d.count} tỉnh thành`))
+                        .on("mousemove", moveTooltip)
+                        .on("mouseout", hideTooltip)
+                        .call(enter => enter.transition(t).attr("width", d => xScale(d.count))),
+                    update => update.call(update => update.transition(t)
+                        .attr("y", d => yScale(d.condition)).attr("width", d => xScale(d.count)).attr("height", yScale.bandwidth())),
+                    exit => exit.transition(t).attr("width", 0).remove()
+                );
+
+            // THỰC HIỆN DATA JOIN CHO CÁC NHÃN SỐ (TEXT)
+            svg.select(".bars-holder").selectAll(".freq-label")
+                .data(counts, d => d.condition)
+                .join(
+                    enter => enter.append("text").attr("class", "freq-label")
+                        .attr("y", d => yScale(d.condition) + yScale.bandwidth()/2).attr("dy", "0.35em")
+                        .style("font-size", "11px").style("font-weight", "600").style("fill", "#475569")
+                        .text(d => d.count)
+                        .call(enter => enter.transition(t).attr("x", d => xScale(d.count) + 6)),
+                    update => update.call(update => update.transition(t)
+                        .attr("y", d => yScale(d.condition) + yScale.bandwidth()/2).attr("x", d => xScale(d.count) + 6).text(d => d.count)),
+                    exit => exit.remove()
+                );
+        }
+
+
+        // ========================================================
+        // HÀM XỬ LÝ LOGIC KHI TƯƠNG TÁC CLICK CHỌN BỘ LỌC VÙNG MIỀN
+        // ========================================================
+        function toggleRegionFilter(region) {
+            // Nếu vùng đang chọn trùng với vùng vừa click -> Hủy lọc. Ngược lại -> Thiết lập vùng mới.
+            selectedRegion = (selectedRegion === region) ? null : region;
+
+            const filterContainer = d3.select("#filter-container");
+            const suffix = d3.select("#freq-title-suffix");
+
+            if (selectedRegion) {
+                // Hiển thị thanh trạng thái bộ lọc trên Header
+                filterContainer.style("display", "inline-flex");
+                d3.select("#filter-name").text(selectedRegion);
+                suffix.text(`(${selectedRegion})`);
+            } else {
+                filterContainer.style("display", "none");
+                suffix.text("(Toàn Quốc)");
+            }
+
+            // Kích hoạt cập nhật lại giao diện ở tất cả các biểu đồ thành phần
+            refreshCompareBars();
+            refreshBubbleOpacity();
+            updateFrequencyChart();
+        }
+
+        // Đăng ký sự kiện nút Hủy lọc (Reset)
+        document.getElementById('btn-reset').addEventListener('click', () => {
+            toggleRegionFilter(selectedRegion);
+        });
+
+
+        // ========================================================
+        // HÀM TIỆN ÍCH HIỂN THỊ TOOLTIP
+        // ========================================================
+        function showTooltip(event, text) {
+            tooltip.style("opacity", 1).html(text);
+        }
+        function moveTooltip(event) {
+            tooltip.style("left", (event.pageX + 15) + "px")
+                   .style("top", (event.pageY - 15) + "px");
+        }
+        function hideTooltip() {
+            tooltip.style("opacity", 0);
+        }
+
+    </script>
+</body>
+</html>
