@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task 12 - Tương quan Thời gian ban ngày và Chỉ số UV</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --uv-low: #10b981;       /* 0-2 Xanh lá */
+            --uv-mod: #fbbf24;       /* 3-5 Vàng */
+            --uv-high: #f97316;      /* 6-7 Cam */
+            --uv-vhigh: #ef4444;     /* 8-10 Đỏ */
+            --uv-extreme: #8b5cf6;   /* 11+ Tím */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            max-width: 800px;
+        }
+
+        .header h2 {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 12px;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .chart-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        /* Loading Overlay */
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: 600;
+            color: #3b82f6;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 50;
+            pointer-events: none;
+        }
+
+        /* --- STYLE CHO AXIS D3 --- */
+        .axis-label {
+            font-size: 13px;
+            font-weight: 600;
+            fill: var(--text-muted);
+        }
+        .tick text {
+            font-size: 12px;
+            fill: var(--text-muted);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .tick line, .domain {
+            stroke: var(--border-color);
+        }
+        .grid line {
+            stroke: var(--border-color);
+            stroke-dasharray: 4;
+            stroke-opacity: 0.6;
+        }
+
+        /* --- STYLE BONG BÓNG VÀ TOOLTIP --- */
+        .dot {
+            stroke: rgba(255,255,255,0.5);
+            stroke-width: 0.5px;
+            opacity: 0.7;
+            cursor: pointer;
+            /* Đưa transition về CSS để tương tác hover mượt hơn, không dùng D3 transition cho hover */
+            transition: opacity 0.15s, stroke 0.15s, stroke-width 0.15s; 
+        }
+        .dot:hover {
+            stroke-width: 2px;
+            stroke: #1e293b;
+            opacity: 1 !important;
+            z-index: 10;
+        }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(229, 231, 235, 0.8);
+            border-radius: 12px;
+            padding: 16px;
+            min-width: 220px;
+            pointer-events: none;
+            opacity: 0;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transform: translateY(10px);
+            transition: opacity 0.1s ease, transform 0.1s ease;
+            z-index: 100;
+            color: var(--text-main);
+        }
+        .tooltip.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .tt-title {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .tt-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+        .tt-label { color: var(--text-muted); }
+        .tt-value { font-weight: 600; }
+
+        /* Chú giải UV */
+        .legend-container {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2>Tương quan: Độ dài ban ngày và Chỉ số UV</h2>
+        <p>Biểu đồ phân tán (Scatter Plot) giúp nhận diện xem những ngày có thời gian chiếu sáng dài hơn (Mặt trời mọc sớm, lặn trễ) có dẫn đến chỉ số bức xạ tia cực tím (UV) cao hơn hay không.</p>
+    </div>
+
+    <div class="chart-card">
+        <div id="loading">Đang tải và xử lý dữ liệu...</div>
+        <div id="chart-container"></div>
+        
+        <div class="legend-container">
+            <div class="legend-item"><div class="legend-color" style="background: var(--uv-low)"></div> Thấp (0-2)</div>
+            <div class="legend-item"><div class="legend-color" style="background: var(--uv-mod)"></div> Trung bình (3-5)</div>
+            <div class="legend-item"><div class="legend-color" style="background: var(--uv-high)"></div> Cao (6-7)</div>
+            <div class="legend-item"><div class="legend-color" style="background: var(--uv-vhigh)"></div> Rất cao (8-10)</div>
+            <div class="legend-item"><div class="legend-color" style="background: var(--uv-extreme)"></div> Cực độ (11+)</div>
+        </div>
+    </div>
+
+    <script>
+        const margin = { top: 20, right: 30, bottom: 50, left: 60 };
+        const width = 850 - margin.left - margin.right;
+        const height = 450 - margin.top - margin.bottom;
+
+        const container = d3.select("#chart-container");
+        const loading = d3.select("#loading");
+        
+        const svg = container.append("svg")
+            .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        const tooltip = container.append("div").attr("class", "tooltip");
+
+        function parseTime(timeStr) {
+            if (!timeStr) return null;
+            const [time, modifier] = timeStr.split(' ');
+            let [hours, minutes] = time.split(':');
+            hours = parseInt(hours, 10);
+            minutes = parseInt(minutes, 10);
+            
+            if (modifier === 'PM' && hours !== 12) hours += 12;
+            if (modifier === 'AM' && hours === 12) hours = 0;
+            
+            return hours + minutes / 60;
+        }
+
+        function getUvColor(uv) {
+            if (uv <= 2) return "var(--uv-low)";
+            if (uv <= 5) return "var(--uv-mod)";
+            if (uv <= 7) return "var(--uv-high)";
+            if (uv <= 10) return "var(--uv-vhigh)";
+            return "var(--uv-extreme)";
+        }
+
+        // Tải dữ liệu
+        d3.csv("clean_weather_dataset.csv").then(data => {
+            
+            // Xử lý dữ liệu
+            let processedData = data.map(d => {
+                const sunriseTime = parseTime(d["astro.sunrise"]);
+                const sunsetTime = parseTime(d["astro.sunset"]);
+                const daylightDuration = sunsetTime - sunriseTime;
+                
+                return {
+                    location: d["location.name"],
+                    date: d["date"],
+                    sunrise: d["astro.sunrise"],
+                    sunset: d["astro.sunset"],
+                    duration: daylightDuration,
+                    uv: parseFloat(d["day.uv"])
+                };
+            }).filter(d => !isNaN(d.duration) && !isNaN(d.uv) && d.duration > 0);
+
+            // Ẩn loading khi xử lý xong
+            loading.style("display", "none");
+
+            // Thang đo
+            const xExtent = d3.extent(processedData, d => d.duration);
+            const xScale = d3.scaleLinear()
+                .domain([xExtent[0] - 0.2, xExtent[1] + 0.2])
+                .range([0, width]);
+
+            const yScale = d3.scaleLinear()
+                .domain([0, d3.max(processedData, d => d.uv) + 1])
+                .range([height, 0]);
+
+            // Vẽ Lưới & Trục
+            svg.append("g")
+                .attr("class", "grid")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(xScale).tickSize(-height).tickFormat(""));
+
+            svg.append("g")
+                .attr("class", "grid")
+                .call(d3.axisLeft(yScale).tickSize(-width).tickFormat(""));
+
+            svg.append("g")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(xScale).ticks(8).tickFormat(d => d.toFixed(1) + " h"))
+                .append("text")
+                .attr("class", "axis-label")
+                .attr("x", width / 2)
+                .attr("y", 40)
+                .attr("text-anchor", "middle")
+                .text("Độ dài ban ngày (Giờ)");
+
+            svg.append("g")
+                .call(d3.axisLeft(yScale).ticks(5))
+                .append("text")
+                .attr("class", "axis-label")
+                .attr("transform", "rotate(-90)")
+                .attr("x", -height / 2)
+                .attr("y", -40)
+                .attr("text-anchor", "middle")
+                .text("Chỉ số UV (Max)");
+
+            // VẼ CÁC ĐIỂM DỮ LIỆU - XUẤT HIỆN ĐỒNG LOẠT
+            const dots = svg.selectAll(".dot")
+                .data(processedData)
+                .enter()
+                .append("circle")
+                .attr("class", "dot")
+                .attr("cx", d => xScale(d.duration))
+                .attr("cy", height) // Bắt đầu từ đáy
+                .attr("r", 4) // Kích thước nhỏ gọn để render mượt hơn
+                .attr("fill", d => getUvColor(d.uv));
+
+            // TỐI ƯU HIỆU ỨNG: Không dùng hàm delay() nữa, tất cả bay lên cùng 1 lúc trong 0.8 giây
+            dots.transition()
+                .duration(800)
+                .ease(d3.easeCubicOut)
+                .attr("cy", d => yScale(d.uv));
+
+            // TƯƠNG TÁC HOVER CỰC NHẠY
+            dots.on("mouseover", function(event, d) {
+                // Phóng to điểm đang trỏ
+                d3.select(this).raise().attr("r", 8); 
+
+                const hrs = Math.floor(d.duration);
+                const mins = Math.round((d.duration - hrs) * 60);
+
+                tooltip.html(`
+                    <div class="tt-title">${d.location} <span style="font-weight:400; font-size:12px; color:#64748b">(${d.date})</span></div>
+                    <div class="tt-row"><span class="tt-label">Mặt trời mọc:</span> <span class="tt-value">${d.sunrise}</span></div>
+                    <div class="tt-row"><span class="tt-label">Mặt trời lặn:</span> <span class="tt-value">${d.sunset}</span></div>
+                    <div class="tt-row" style="margin-top:8px; border-top: 1px dashed #e2e8f0; padding-top:8px;">
+                        <span class="tt-label">Tổng thời gian sáng:</span> 
+                        <span class="tt-value" style="color: #2563eb">${hrs}h ${mins}m</span>
+                    </div>
+                    <div class="tt-row">
+                        <span class="tt-label">Chỉ số UV:</span> 
+                        <span class="tt-value" style="color: ${getUvColor(d.uv)}; font-size: 15px">${d.uv}</span>
+                    </div>
+                `);
+                
+                tooltip.classed("visible", true)
+                       .style("left", (event.pageX + 15) + "px")
+                       .style("top", (event.pageY - 15) + "px");
+            })
+            .on("mousemove", function(event) {
+                tooltip.style("left", (event.pageX + 15) + "px")
+                       .style("top", (event.pageY - 15) + "px");
+            })
+            .on("mouseout", function() {
+                // Thu nhỏ lại khi thả chuột ra
+                d3.select(this).attr("r", 4);
+                tooltip.classed("visible", false);
+            });
+
+        }).catch(error => {
+            console.error("Lỗi:", error);
+            loading.text("Lỗi tải dữ liệu. Vui lòng kiểm tra lại file CSV!").style("color", "red");
+        });
+    </script>
+</body>
+</html>

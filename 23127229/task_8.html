@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task 8 - Nhiệt độ theo Trạng thái Thời tiết</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --accent: #3b82f6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+            max-width: 800px;
+        }
+
+        .header h2 {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            background: var(--card-bg);
+            padding: 12px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        .controls label {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        select {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            cursor: pointer;
+            background-color: #f8fafc;
+            transition: border-color 0.2s;
+        }
+
+        select:focus {
+            border-color: var(--accent);
+        }
+
+        .chart-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            padding: 24px 32px;
+            border: 1px solid var(--border-color);
+            position: relative;
+            width: 100%;
+            max-width: 1000px;
+            overflow-x: auto;
+        }
+
+        /* D3 Chart Styles */
+        .bar {
+            cursor: pointer;
+            transition: filter 0.2s;
+        }
+        .bar:hover {
+            filter: brightness(0.85);
+        }
+
+        .axis-label {
+            font-size: 13px;
+            font-weight: 600;
+            fill: var(--text-muted);
+        }
+        
+        .x-axis text {
+            font-size: 12px;
+            fill: var(--text-main);
+            font-weight: 500;
+        }
+        
+        .y-axis text {
+            font-size: 12px;
+            fill: var(--text-muted);
+        }
+
+        .grid line {
+            stroke: var(--border-color);
+            stroke-dasharray: 4;
+            stroke-opacity: 0.6;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(229, 231, 235, 0.8);
+            border-radius: 10px;
+            padding: 12px 16px;
+            pointer-events: none;
+            opacity: 0;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: opacity 0.2s ease, transform 0.1s ease;
+            z-index: 100;
+        }
+        .tooltip.visible {
+            opacity: 1;
+        }
+        .tt-title {
+            font-weight: 700;
+            font-size: 15px;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+        .tt-value {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+        .tt-value span {
+            font-weight: 700;
+            color: #ef4444; /* Màu đỏ cho nhiệt độ */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2>Nhiệt độ trung bình theo Trạng thái Thời tiết</h2>
+        <p>Chọn các khu vực khác nhau từ danh sách bên dưới để xem sự biến động nhiệt độ. Biểu đồ sẽ tự động cập nhật và chuyển động dựa trên dữ liệu tương ứng của khu vực được chọn.</p>
+    </div>
+
+    <div class="controls">
+        <label for="regionFilter">Khu vực (Region):</label>
+        <select id="regionFilter">
+            <option value="All">Tất cả khu vực</option>
+            </select>
+    </div>
+
+    <div class="chart-card">
+        <div id="chart-container"></div>
+    </div>
+
+    <script>
+        // 1. Khởi tạo Kích thước & SVG
+        const margin = { top: 30, right: 30, bottom: 100, left: 60 };
+        const width = 900 - margin.left - margin.right;
+        const height = 450 - margin.top - margin.bottom;
+
+        const svg = d3.select("#chart-container")
+            .append("svg")
+            .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        const tooltip = d3.select("body").append("div").attr("class", "tooltip");
+
+        // Các group cho Axes & Lưới
+        const gridGroup = svg.append("g").attr("class", "grid");
+        const xAxisGroup = svg.append("g").attr("transform", `translate(0,${height})`).attr("class", "x-axis");
+        const yAxisGroup = svg.append("g").attr("class", "y-axis");
+
+        // Label Trục Y
+        svg.append("text")
+            .attr("class", "axis-label")
+            .attr("transform", "rotate(-90)")
+            .attr("x", -height / 2)
+            .attr("y", -40)
+            .attr("text-anchor", "middle")
+            .text("Nhiệt độ TB (°C)");
+
+        // Biến toàn cục để lưu dữ liệu
+        let globalData = [];
+
+        // 2. Tải và Xử lý dữ liệu
+        d3.csv("clean_weather_dataset.csv").then(data => {
+            
+            // Xử lý type casting
+            globalData = data.map(d => ({
+                region: d["location.region"],
+                condition: d["day.condition.text"],
+                temp: parseFloat(d["day.avgtemp_c"])
+            })).filter(d => !isNaN(d.temp) && d.condition && d.region);
+
+            // Cập nhật Dropdown filter
+            const regions = [...new Set(globalData.map(d => d.region))].sort();
+            const select = d3.select("#regionFilter");
+            regions.forEach(region => {
+                select.append("option").attr("value", region).text(region);
+            });
+
+            // Lắng nghe sự kiện đổi filter
+            select.on("change", function() {
+                updateChart(this.value);
+            });
+
+            // Vẽ lần đầu tiên (Tất cả khu vực)
+            updateChart("All");
+
+        }).catch(err => {
+            console.error(err);
+            d3.select("#chart-container").html("<p style='color:red'>Lỗi tải dữ liệu. Hãy đảm bảo bạn đang chạy trên Live Server và đúng tên file.</p>");
+        });
+
+        // 3. Hàm Update Chart (Chứa Transition Logic - CỐT LÕI YÊU CẦU CỦA ĐỒ ÁN)
+        function updateChart(selectedRegion) {
+            
+            // 3.1. Filter dữ liệu
+            let filteredData = globalData;
+            if (selectedRegion !== "All") {
+                filteredData = globalData.filter(d => d.region === selectedRegion);
+            }
+
+            // 3.2. Gom nhóm (Group by Condition) và tính trung bình (Mean Temp)
+            let rollupData = d3.rollups(
+                filteredData,
+                v => d3.mean(v, d => d.temp), // Tính trung bình nhiệt độ
+                d => d.condition
+            );
+
+            // Chuyển array kết quả thành dạng object và sắp xếp giảm dần theo nhiệt độ
+            let chartData = rollupData.map(([condition, avgTemp]) => ({
+                condition: condition,
+                avgTemp: avgTemp
+            })).sort((a, b) => b.avgTemp - a.avgTemp);
+
+            // 3.3. Cập nhật Thang đo (Scales)
+            const xScale = d3.scaleBand()
+                .domain(chartData.map(d => d.condition))
+                .range([0, width])
+                .padding(0.3); // Khoảng cách giữa các cột
+
+            const maxTemp = d3.max(chartData, d => d.avgTemp) || 0;
+            const yScale = d3.scaleLinear()
+                .domain([0, maxTemp * 1.15]) // Tăng 15% phía trên để có không gian trống
+                .range([height, 0]);
+
+            // Thang đo màu (Ấm = Cam/Đỏ, Mát = Xanh/Vàng)
+            const colorScale = d3.scaleSequential(d3.interpolateSpectral)
+                .domain([maxTemp, d3.min(chartData, d => d.avgTemp) || 0]); // Đảo ngược để đỏ/cam là nóng
+
+            // 3.4. Cập nhật Trục (Axes) & Lưới với Transition
+            xAxisGroup.transition().duration(800).ease(d3.easeCubicOut)
+                .call(d3.axisBottom(xScale).tickSizeOuter(0))
+                .selectAll("text")
+                .attr("transform", "translate(-10,0)rotate(-40)") // Xoay chữ chéo để không bị đè
+                .style("text-anchor", "end");
+
+            yAxisGroup.transition().duration(800).ease(d3.easeCubicOut)
+                .call(d3.axisLeft(yScale).ticks(6));
+
+            gridGroup.transition().duration(800)
+                .call(d3.axisLeft(yScale).tickSize(-width).tickFormat(""));
+
+            // 3.5. ENTER - UPDATE - EXIT PATTERN (Cho Bars)
+            const bars = svg.selectAll(".bar")
+                .data(chartData, d => d.condition); // Key function rất quan trọng để D3 track đúng object khi bị sort/filter
+
+            // Xóa các cột không còn tồn tại trong filter mới (Exit)
+            bars.exit()
+                .transition().duration(600).ease(d3.easeBackIn)
+                .attr("y", height)
+                .attr("height", 0)
+                .style("opacity", 0)
+                .remove();
+
+            // Khởi tạo các cột mới (Enter) và gộp chung với cột đang có (Update)
+            const enterBars = bars.enter()
+                .append("rect")
+                .attr("class", "bar")
+                .attr("x", d => xScale(d.condition))
+                .attr("width", xScale.bandwidth())
+                .attr("y", height) // Bắt đầu từ dưới đáy
+                .attr("height", 0)
+                .attr("rx", 6) // Bo góc cột
+                .attr("fill", d => colorScale(d.avgTemp));
+
+            // Hiệu ứng Transition khi Update (Thay đổi chiều cao, vị trí ngang và màu sắc)
+            enterBars.merge(bars)
+                .transition().duration(800).ease(d3.easeCubicOut)
+                .delay((d, i) => i * 30) // Delay nhẹ tạo hiệu ứng lượn sóng
+                .attr("x", d => xScale(d.condition))
+                .attr("width", xScale.bandwidth())
+                .attr("y", d => yScale(d.avgTemp))
+                .attr("height", d => height - yScale(d.avgTemp))
+                .attr("fill", d => colorScale(d.avgTemp));
+
+            // 3.6. Cập nhật Tooltip Event (cần gắn lại cho cả cột mới và cột đã update)
+            svg.selectAll(".bar")
+                .on("mouseover", function(event, d) {
+                    d3.select(this)
+                        .transition().duration(100)
+                        .attr("opacity", 0.7);
+
+                    tooltip.html(`
+                        <div class="tt-title">${d.condition}</div>
+                        <div class="tt-value">Nhiệt độ trung bình: <span>${d.avgTemp.toFixed(1)}°C</span></div>
+                    `);
+                    tooltip.classed("visible", true);
+                })
+                .on("mousemove", function(event) {
+                    tooltip.style("left", (event.pageX + 15) + "px")
+                           .style("top", (event.pageY - 30) + "px");
+                })
+                .on("mouseout", function() {
+                    d3.select(this)
+                        .transition().duration(200)
+                        .attr("opacity", 1);
+                    tooltip.classed("visible", false);
+                });
+        }
+    </script>
+</body>
+</html>

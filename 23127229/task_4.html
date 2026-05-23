@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vietnam Weather Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #f3f4f6;
+            --sidebar-bg: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --accent: #2563eb;
+            --map-base: #f8fafc;
+            --map-land: #e2e8f0;
+            --map-border: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+        }
+
+        /* --- BỐ CỤC DASHBOARD --- */
+        .dashboard {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* --- SIDEBAR TRÁI --- */
+        .sidebar {
+            width: 320px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.03);
+            z-index: 10;
+        }
+
+        .brand {
+            margin-bottom: 40px;
+        }
+
+        .brand h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.2;
+            margin-bottom: 8px;
+        }
+
+        .brand p {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .info-card {
+            background: var(--bg-color);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            border: 1px solid var(--border-color);
+        }
+
+        /* --- CHÚ GIẢI (LEGEND) BẰNG HTML/CSS --- */
+        .legend-wrapper {
+            margin-top: auto;
+        }
+        .legend-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .legend-bar {
+            height: 12px;
+            width: 100%;
+            border-radius: 6px;
+            /* Dải màu tương đương interpolateYlOrRd */
+            background: linear-gradient(to right, #ffffcc, #fd8d3c, #e31a1c, #800026);
+            margin-bottom: 8px;
+        }
+        .legend-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* --- KHU VỰC BẢN ĐỒ --- */
+        .map-container {
+            flex: 1;
+            position: relative;
+            background: var(--map-base);
+            cursor: grab;
+        }
+        .map-container:active {
+            cursor: grabbing;
+        }
+
+        /* --- STYLE CHO D3.JS --- */
+        .map-path {
+            fill: var(--map-land);
+            stroke: var(--map-border);
+            stroke-width: 1px;
+            vector-effect: non-scaling-stroke; /* Giữ nguyên viền khi zoom */
+            transition: fill 0.3s ease;
+        }
+        .map-path:hover {
+            fill: #cbd5e1;
+        }
+
+        .province-point {
+            stroke: #ffffff;
+            stroke-width: 1.5px;
+            vector-effect: non-scaling-stroke;
+            cursor: pointer;
+            transition: filter 0.2s;
+        }
+        .province-point:hover {
+            filter: drop-shadow(0px 0px 4px rgba(0,0,0,0.4));
+            stroke: var(--text-main);
+        }
+
+        /* --- TOOLTIP PRO --- */
+        .tooltip {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(229, 231, 235, 0.5);
+            border-radius: 12px;
+            padding: 16px;
+            min-width: 200px;
+            pointer-events: none;
+            opacity: 0;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transform: translateY(10px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            z-index: 100;
+        }
+        .tooltip.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .tt-header {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--text-main);
+            margin-bottom: 2px;
+        }
+        .tt-region {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .tt-stat {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+        .tt-stat .label { color: var(--text-muted); }
+        .tt-stat .value { font-weight: 600; color: var(--text-main); }
+        .tt-temp { color: #dc2626 !important; font-size: 15px; }
+
+        /* Loader */
+        #loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: 500;
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="brand">
+                <h1>Bản đồ Thời tiết</h1>
+                <p>Task 4 - Phân tích Nhiệt độ Trung bình Tỉnh/Thành</p>
+            </div>
+
+            <div class="info-card">
+                <strong>💡 Hướng dẫn tương tác:</strong><br><br>
+                • Sử dụng con lăn chuột để phóng to/thu nhỏ.<br>
+                • Nhấn giữ chuột trái để kéo thả bản đồ.<br>
+                • Di chuột vào các bong bóng để xem thông tin chi tiết.
+            </div>
+
+            <div class="legend-wrapper">
+                <div class="legend-title">
+                    <span>Nhiệt độ trung bình</span>
+                </div>
+                <div class="legend-bar"></div>
+                <div class="legend-labels">
+                    <span id="leg-min">--°C</span>
+                    <span id="leg-max">--°C</span>
+                </div>
+            </div>
+        </aside>
+
+        <main class="map-container" id="map-container">
+            <div id="loader">Đang tải dữ liệu...</div>
+        </main>
+    </div>
+
+    <script>
+        // Cấu hình linh hoạt theo container
+        const container = document.getElementById("map-container");
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+
+        const svg = d3.select("#map-container")
+            .append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .attr("viewBox", `0 0 ${width} ${height}`);
+
+        const g = svg.append("g");
+
+        const tooltip = d3.select("#map-container")
+            .append("div")
+            .attr("class", "tooltip");
+
+        const projection = d3.geoMercator()
+            .center([106.0, 16.0]) 
+            .scale(height * 2.8) // Scale tự động theo màn hình
+            .translate([width / 2, height / 2]);
+
+        const pathGenerator = d3.geoPath().projection(projection);
+
+        // Hàm làm sạch dữ liệu
+        function cleanCoordinate(coordStr) {
+            if (!coordStr) return null;
+            let cleanStr = coordStr.replace(/\./g, '');
+            let num = parseFloat(cleanStr);
+            if (num > 1000000) return num / 10000; 
+            if (num > 1000) return num / 10000;
+            if (num > 100) return num / 10;        
+            return parseFloat(coordStr);
+        }
+
+        // ĐỔI TÊN FILE CỦA BẠN THÀNH weather_data.csv để tránh lỗi đường dẫn
+        const geojsonUrl = "https://raw.githubusercontent.com/TungTh/tungth.github.io/master/data/vn-provinces.json";
+        const csvUrl = "clean_weather_dataset.csv"; 
+
+        Promise.all([
+            d3.json(geojsonUrl),
+            d3.csv(csvUrl)
+        ]).then(([geoData, weatherData]) => {
+            
+            d3.select("#loader").remove();
+
+            // 1. Dữ liệu Bản đồ nền
+            g.selectAll("path")
+                .data(geoData.features)
+                .enter()
+                .append("path")
+                .attr("class", "map-path")
+                .attr("d", pathGenerator);
+
+            // 2. Dữ liệu Thời tiết
+            weatherData.forEach(d => {
+                d.lat = cleanCoordinate(d["location.lat"]);
+                d.lon = cleanCoordinate(d["location.lon"]);
+                d.avgTemp = parseFloat(d["day.avgtemp_c"]);
+            });
+
+            const validData = weatherData.filter(d => !isNaN(d.lat) && !isNaN(d.lon) && !isNaN(d.avgTemp));
+
+            const minTemp = Math.floor(d3.min(validData, d => d.avgTemp));
+            const maxTemp = Math.ceil(d3.max(validData, d => d.avgTemp));
+            
+            // Cập nhật text cho Legend HTML
+            document.getElementById("leg-min").textContent = `${minTemp}°C`;
+            document.getElementById("leg-max").textContent = `${maxTemp}°C`;
+
+            const colorScale = d3.scaleSequential(d3.interpolateYlOrRd).domain([minTemp, maxTemp]);
+            const radiusScale = d3.scaleSqrt().domain([minTemp, maxTemp]).range([4, 16]);
+
+            // 3. Vẽ Bubbles
+            const circles = g.selectAll("circle")
+                .data(validData)
+                .enter()
+                .append("circle")
+                .attr("class", "province-point")
+                .attr("cx", d => projection([d.lon, d.lat])[0])
+                .attr("cy", d => projection([d.lon, d.lat])[1])
+                .attr("fill", d => colorScale(d.avgTemp))
+                .attr("r", 0);
+
+            // Transition
+            circles.transition()
+                .duration(1000)
+                .delay((d, i) => i * 15)
+                .ease(d3.easeCubicOut)
+                .attr("r", d => radiusScale(d.avgTemp));
+
+            // Tương tác Hover
+            circles.on("mouseover", function(event, d) {
+                const currentK = d3.zoomTransform(svg.node()).k; // Lấy tỷ lệ zoom hiện tại
+                
+                d3.select(this)
+                    .raise()
+                    .transition().duration(200)
+                    .attr("r", (radiusScale(d.avgTemp) * 1.5) / currentK); // Phóng to mượt mà
+
+                tooltip.html(`
+                    <div class="tt-header">${d["location.name"]}</div>
+                    <div class="tt-region">${d["location.region"]}</div>
+                    <div class="tt-stat">
+                        <span class="label">Nhiệt độ:</span>
+                        <span class="value tt-temp">${d.avgTemp}°C</span>
+                    </div>
+                    <div class="tt-stat">
+                        <span class="label">Lượng mưa:</span>
+                        <span class="value">${d["day.totalprecip_mm"]} mm</span>
+                    </div>
+                    <div class="tt-stat">
+                        <span class="label">Thời tiết:</span>
+                        <span class="value">${d["day.condition.text"]}</span>
+                    </div>
+                `);
+                
+                tooltip.classed("visible", true)
+                       .style("left", (event.pageX + 20) + "px")
+                       .style("top", (event.pageY - 20) + "px");
+            })
+            .on("mousemove", function(event) {
+                tooltip.style("left", (event.pageX + 20) + "px")
+                       .style("top", (event.pageY - 20) + "px");
+            })
+            .on("mouseout", function(event, d) {
+                const currentK = d3.zoomTransform(svg.node()).k;
+                d3.select(this)
+                    .transition().duration(200)
+                    .attr("r", radiusScale(d.avgTemp) / currentK); // Trả về tỷ lệ chuẩn
+
+                tooltip.classed("visible", false);
+            });
+
+            // 4. Kỹ thuật Zoom Pro: Điểm (Bubble) không bị phình to khi Zoom bản đồ
+            const zoom = d3.zoom()
+                .scaleExtent([1, 10])
+                .on("zoom", (event) => {
+                    g.attr("transform", event.transform);
+                    // Giảm radius của circle tỷ lệ nghịch với độ scale của map
+                    circles.attr("r", d => radiusScale(d.avgTemp) / event.transform.k);
+                });
+            
+            svg.call(zoom);
+
+        }).catch(error => {
+            console.error("Lỗi:", error);
+            d3.select("#loader")
+              .text("Lỗi tải dữ liệu! Hãy kiểm tra Live Server và tên file CSV.")
+              .style("color", "#dc2626");
+        });
+    </script>
+</body>
+</html>
